@@ -7,7 +7,7 @@ var logsOutputChannel: vscode.OutputChannel;
 
 var NEW_LINE:string = "\n\n";
 
-export function showOutputMessage(message: any, popupMessage: string = "Results are printed to OUTPUT / Airflow-Extension"): void {
+export function showOutputMessage(message: any, popupMessage: string = "Results are printed to OUTPUT / AwsAccess-Extension"): void {
 
   if (!outputChannel) {
     outputChannel = vscode.window.createOutputChannel("Airflow-Extension");
@@ -25,11 +25,11 @@ export function showOutputMessage(message: any, popupMessage: string = "Results 
   showInfoMessage(popupMessage);
 }
 
-export function logToOutput(message: any, error: Error): void {
+export function logToOutput(message: any): void {
   let now = new Date().toLocaleString();
 
   if (!logsOutputChannel) {
-    logsOutputChannel = vscode.window.createOutputChannel("Airflow-Log");
+    logsOutputChannel = vscode.window.createOutputChannel("AwsAccess-Log");
   }
 
   if (typeof message === "object") {
@@ -37,12 +37,6 @@ export function logToOutput(message: any, error: Error): void {
   }
   else {
     logsOutputChannel.appendLine("[" + now + "] " + message);
-  }
-
-  if (error) {
-    logsOutputChannel.appendLine(error.name);
-    logsOutputChannel.appendLine(error.message);
-    //logsOutputChannel.appendLine(error.stack);
   }
 }
 

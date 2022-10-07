@@ -2,18 +2,33 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deactivate = exports.activate = void 0;
 const vscode = require("vscode");
-const aws = require("./aws-login");
+const ui = require("./ui");
+const StatusBar = require("./statusBarItem");
 function activate(context) {
-    console.log('Aws Access is now active!');
-    let disposable = vscode.commands.registerCommand('aws-access-vscode-extension.CheckAwsCredentials', () => {
-        let provider = aws.getDefaultProvider();
-        vscode.window.showInformationMessage(provider);
+    ui.logToOutput('Aws Access is now active!');
+    new StatusBar.StatusBarItem(context);
+    vscode.commands.registerCommand('aws-access-vscode-extension.CheckAwsCredentials', () => {
+        StatusBar.StatusBarItem.Current.GetDefaultCredentials();
     });
-    context.subscriptions.push(disposable);
+    vscode.commands.registerCommand('aws-access-vscode-extension.SetAwsLoginCommand', () => {
+        StatusBar.StatusBarItem.Current.SetAwsLoginCommand();
+    });
+    vscode.commands.registerCommand('aws-access-vscode-extension.ListAwsProfiles', () => {
+        StatusBar.StatusBarItem.Current.ListAwsProfiles();
+    });
+    vscode.commands.registerCommand('aws-access-vscode-extension.AutoCallLoginCommand', () => {
+        StatusBar.StatusBarItem.Current.AutoCallLoginCommand();
+    });
+    vscode.commands.registerCommand('aws-access-vscode-extension.SetAutoCallLoginCommandTime', () => {
+        StatusBar.StatusBarItem.Current.SetAutoCallLoginCommandTime();
+    });
+    vscode.commands.registerCommand('aws-access-vscode-extension.SetTimeoutErrorTime', () => {
+        StatusBar.StatusBarItem.Current.SetTimeoutErrorTime();
+    });
 }
 exports.activate = activate;
 function deactivate() {
-    console.log('Aws Access is now de-active!');
+    ui.logToOutput('Aws Access is now de-active!');
 }
 exports.deactivate = deactivate;
 //# sourceMappingURL=extension.js.map

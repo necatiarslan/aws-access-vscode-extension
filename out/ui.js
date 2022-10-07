@@ -7,7 +7,7 @@ const path_1 = require("path");
 var outputChannel;
 var logsOutputChannel;
 var NEW_LINE = "\n\n";
-function showOutputMessage(message, popupMessage = "Results are printed to OUTPUT / Airflow-Extension") {
+function showOutputMessage(message, popupMessage = "Results are printed to OUTPUT / AwsAccess-Extension") {
     if (!outputChannel) {
         outputChannel = vscode.window.createOutputChannel("Airflow-Extension");
     }
@@ -22,21 +22,16 @@ function showOutputMessage(message, popupMessage = "Results are printed to OUTPU
     showInfoMessage(popupMessage);
 }
 exports.showOutputMessage = showOutputMessage;
-function logToOutput(message, error) {
+function logToOutput(message) {
     let now = new Date().toLocaleString();
     if (!logsOutputChannel) {
-        logsOutputChannel = vscode.window.createOutputChannel("Airflow-Log");
+        logsOutputChannel = vscode.window.createOutputChannel("AwsAccess-Log");
     }
     if (typeof message === "object") {
         logsOutputChannel.appendLine("[" + now + "] " + JSON.stringify(message, null, 4));
     }
     else {
         logsOutputChannel.appendLine("[" + now + "] " + message);
-    }
-    if (error) {
-        logsOutputChannel.appendLine(error.name);
-        logsOutputChannel.appendLine(error.message);
-        //logsOutputChannel.appendLine(error.stack);
     }
 }
 exports.logToOutput = logToOutput;

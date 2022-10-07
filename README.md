@@ -1,8 +1,5 @@
 # Aws Access 
-Helps you to manage your AWS Credentials.
-
-- The shared credentials file on Linux, Unix, and macOS: ~/.aws/credentials
-- The shared credentials file on Windows: C:\Users\USER_NAME\.aws\credentials
+Helps you to manage your AWS Access Credentials.
 
 For more detail on aws credentials
 https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
@@ -13,6 +10,8 @@ It will attempt to find credentials from the following sources (listed in order 
 - SSO credentials from token cache
 - Web identity token credentials
 - Shared credentials and config ini files
+    - The shared credentials file on Linux, Unix, and macOS: ~/.aws/credentials
+    - The shared credentials file on Windows: C:\Users\USER_NAME\.aws\credentials
 - The EC2/ECS Instance Metadata Service
 
 The default credential provider will invoke one provider at a time and only continue to the next if no credentials have been located. For example, if the process finds values defined via the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables, the files at ~/.aws/credentials and ~/.aws/config will not be read, nor will any messages be sent to the Instance Metadata Service.
@@ -37,5 +36,9 @@ You may customize how credentials are resolved by providing an options hash to t
 
 
 https://github.com/aws/aws-sdk-js-v3/tree/main/packages/credential-provider-node
+
 https://github.com/aws/aws-sdk-js-v3
+
+https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
+
 
