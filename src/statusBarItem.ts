@@ -22,6 +22,8 @@ export class StatusBarItem {
     public ActiveProfile:string = "default";
     public IniData:ParsedIniData | undefined;
 
+    public ExpirationCheckInterval: NodeJS.Timer;
+
 
 	constructor(context: vscode.ExtensionContext) {
 		ui.logToOutput('StatusBarItem.constructor Started');
@@ -41,6 +43,8 @@ export class StatusBarItem {
         this.LoadState();
         this.ShowLoading();
         this.GetCredentials();
+
+        this.ExpirationCheckInterval = setInterval(StatusBarItem.RefreshExpirationDuration, 1 * 1000);
 	}
 
     public get Profiles():string[]{
@@ -295,23 +299,32 @@ export class StatusBarItem {
         this.awsAccessStatusBarItem.text = this.Text;
     }
 
+    public static RefreshExpirationDuration()
+    {
+        if(StatusBarItem.Current.HasExpiration)
+        {
+            if(StatusBarItem.Current.IsExpired)
+            {
+                StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile + " Expired !!!";
+                StatusBarItem.Current.Text = "$(cloud) Expired";
+            }
+            else 
+            {
+                StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile + " will expire on " + StatusBarItem.Current.ExpirationDateString;
+                StatusBarItem.Current.Text = "$(cloud) Expire In " + StatusBarItem.Current.ExpireTime;
+            }
+
+            StatusBarItem.Current.awsAccessStatusBarItem.tooltip = StatusBarItem.Current.ToolTip;
+            StatusBarItem.Current.awsAccessStatusBarItem.text = StatusBarItem.Current.Text;
+        }
+    }
+
     public static StatusBarClicked()
     {
         ui.logToOutput('StatusBarItem.StatusBarClicked Started');
 
-        if (!StatusBarItem.Current.HasCredentials)
-        {
-            ui.showInfoMessage("No Aws Credentials Found");
-        }
-        else if (StatusBarItem.Current.HasExpiration)
-        {
-            ui.showInfoMessage("Aws Credentials Will Expire in" + StatusBarItem.Current.ExpireTime + " on " + StatusBarItem.Current.ExpirationDateString);
-        }
-        else
-        {
-
-        }
-
+        StatusBarItem.Current.GetCredentials();
+        ui.showInfoMessage("Aws Credentials Reloaded");
     }
 
     public SaveState() {
