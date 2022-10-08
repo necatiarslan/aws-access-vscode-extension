@@ -111,14 +111,20 @@ class StatusBarItem {
         profileData.then((value) => {
             ui.logToOutput('StatusBarItem.GetCredentials IniData Found');
             this.IniData = value;
+        }).catch((error) => {
+            ui.logToOutput('StatusBarItem.GetCredentials IniData NOT Found ' + error);
         });
+        if (!this.Profiles.includes(this.ActiveProfile) && this.Profiles.length > 0) {
+            this.ActiveProfile = this.Profiles[0];
+            this.SaveState();
+        }
         let provider = api.getDefaultCredentials(this.ActiveProfile);
         provider.then(credentials => {
             ui.logToOutput('StatusBarItem.GetCredentials Credentials Found');
             this.Credentials = credentials;
         })
             .catch((error) => {
-            ui.logToOutput('StatusBarItem.GetCredentials Credentials NOT Found');
+            ui.logToOutput('StatusBarItem.GetCredentials Credentials NOT Found ' + error);
         }).finally(() => {
             this.RefreshText();
         });
