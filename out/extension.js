@@ -8,7 +8,7 @@ function activate(context) {
     ui.logToOutput('Aws Access is now active!');
     new StatusBar.StatusBarItem(context);
     vscode.commands.registerCommand('aws-access-vscode-extension.CheckAwsCredentials', () => {
-        StatusBar.StatusBarItem.Current.GetDefaultCredentials();
+        StatusBar.StatusBarItem.Current.GetCredentials();
     });
     vscode.commands.registerCommand('aws-access-vscode-extension.SetAwsLoginCommand', () => {
         StatusBar.StatusBarItem.Current.SetAwsLoginCommand();
@@ -24,6 +24,9 @@ function activate(context) {
     });
     vscode.commands.registerCommand('aws-access-vscode-extension.SetTimeoutErrorTime', () => {
         StatusBar.StatusBarItem.Current.SetTimeoutErrorTime();
+    });
+    vscode.commands.registerCommand('aws-access-vscode-extension.SetActiveProfile', () => {
+        StatusBar.StatusBarItem.Current.SetActiveProfile();
     });
 }
 exports.activate = activate;

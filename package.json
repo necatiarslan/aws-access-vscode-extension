@@ -42,6 +42,10 @@
         "title": "Aws Access:Set Auto Call Login Command Time"
       },
       {
+        "command": "aws-access-vscode-extension.SetActiveProfile",
+        "title": "Aws Access:Set Active Profile"
+      },
+      {
         "command": "aws-access-vscode-extension.SetTimeoutErrorTime",
         "title": "Aws Access:Set Timeout Error Time"
       }
