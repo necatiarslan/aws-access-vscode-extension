@@ -95,7 +95,18 @@ export function convertMsToTime(milliseconds: number): string {
   seconds = seconds % 60;
   minutes = minutes % 60;
 
-  return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(seconds,)}`;
+  let result:string;
+
+  if(hours === 0)
+  {
+    result = `${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
+  }
+  else
+  {
+    result = `${padTo2Digits(hours)}:${padTo2Digits(minutes)}`;
+  }
+
+  return result;
 }
 
 export function isJsonString(jsonString: string): boolean {

@@ -2,16 +2,8 @@
 import * as vscode from 'vscode';
 import * as api from './api';
 import * as ui from './ui';
-import { Credentials } from "@aws-sdk/types";
+import { Credentials, ParsedIniData } from "@aws-sdk/types";
 import { existsSync } from 'fs';
-
-export enum CredentialsState {
-    Unknown = 0,
-    HasNoCredentials = 1,
-    HasStaticCredentials = 2,
-    HasExpiredCredentials = 3,
-    HasCloseToExpireCredentials = 4,
-  }
 
 export class StatusBarItem {
 
@@ -26,9 +18,9 @@ export class StatusBarItem {
     public ToolTip:string = "Loading ...";
     public ForeColor:string | vscode.ThemeColor | undefined;
     public BackColor:string | vscode.ThemeColor | undefined;
-    public CredentialsState:CredentialsState = CredentialsState.Unknown;
-    public Profiles:string[] = [];
+
     public ActiveProfile:string = "default";
+    public IniData:ParsedIniData | undefined;
 
 
 	constructor(context: vscode.ExtensionContext) {
@@ -45,10 +37,20 @@ export class StatusBarItem {
         this.awsAccessStatusBarItem.tooltip = this.ToolTip;
         context.subscriptions.push(this.awsAccessStatusBarItem);
         this.awsAccessStatusBarItem.show();
+
+        this.LoadState();
         this.ShowLoading();
-        this.LoadProfiles();
         this.GetCredentials();
 	}
+
+    public get Profiles():string[]{
+        let result:string[] = [];
+        if(this.IniData)
+        {
+            result = Object.keys(this.IniData);
+        }
+        return result;
+    }
 
     public get HasCredentials():boolean
     {
@@ -100,8 +102,23 @@ export class StatusBarItem {
         }
     }
 
+    public get ExpirationDateString():string | undefined
+    {
+        let result:string | undefined;
+
+        if(this.IniData)
+        {
+            if(this.IniData[this.ActiveProfile] && this.IniData[this.ActiveProfile]["token_expiration"])
+            {
+                result = this.IniData[this.ActiveProfile]["token_expiration"];
+            }            
+        }
+
+        return result;
+    }
+
     public get HasExpiration():boolean{
-        if(this.Credentials && this.Credentials.expiration)
+        if(this.Credentials && this.ExpirationDateString)
         {
             return true;
         }
@@ -110,26 +127,29 @@ export class StatusBarItem {
     }
 
     public get IsExpired():boolean{
-        if(this.HasExpiration && this.Credentials?.expiration)
-        {
-            let now = new Date();
-            return this.Credentials.expiration < now;
-        }
 
+        if(this.ExpirationDateString)
+        {
+            let expireDate = new Date(this.ExpirationDateString);
+            let now = new Date();
+            return expireDate < now;
+        }
+        
         return false;
     }
 
     public get ExpireTime():string{
-        if(this.HasExpiration && this.Credentials?.expiration)
+        if(this.ExpirationDateString)
         {
             let now = new Date();
+            let expireDate = new Date(this.ExpirationDateString);
             if(this.IsExpired)
             {
-                return "Expired " + ui.getDuration(this.Credentials.expiration, now);
+                return ui.getDuration(expireDate, now);
             }
             else
             {
-                return "To Expire " + ui.getDuration(now, this.Credentials.expiration);
+                return ui.getDuration(now, expireDate);
             }
             
         }
@@ -139,41 +159,23 @@ export class StatusBarItem {
     public GetCredentials(){
         ui.logToOutput('StatusBarItem.GetDefaultCredentials Started');
         this.Text = StatusBarItem.LoadingText;
+
+        let profileData = api.getIniProfileData();
+        profileData.then( (value:ParsedIniData) => {
+            ui.logToOutput('StatusBarItem.GetCredentials IniData Found');
+            this.IniData = value;
+        });
+
         let provider = api.getDefaultCredentials(this.ActiveProfile);
 
 		provider.then( credentials => {
-            ui.logToOutput('StatusBarItem.Credentials Found');
+            ui.logToOutput('StatusBarItem.GetCredentials Credentials Found');
             this.Credentials = credentials;
-            if(credentials.expiration)
-            {
-                let now = new Date();
-                if(this.IsExpired)
-                {
-                    this.CredentialsState = CredentialsState.HasExpiredCredentials;
-                }
-                else
-                {
-                    this.CredentialsState = CredentialsState.HasCloseToExpireCredentials;
-                }
-            }
-            else
-            {
-                this.CredentialsState = CredentialsState.HasStaticCredentials;
-            }
 		})
 		.catch((error) => {
-            ui.logToOutput('StatusBarItem.Credentials NOT Found');
-            this.CredentialsState = CredentialsState.HasNoCredentials;
+            ui.logToOutput('StatusBarItem.GetCredentials Credentials NOT Found');
 		}).finally(()=>{
             this.RefreshText();
-        });
-    }
-
-    public LoadProfiles(){
-        this.Profiles = [];
-        let profileData = api.getIniProfileData();
-        profileData.then( (value) => {
-            this.Profiles = Object.keys(value);
         });
     }
 
@@ -191,6 +193,7 @@ export class StatusBarItem {
                 if(value){
                     this.ActiveProfile = value;
                     this.GetCredentials();
+                    this.SaveState();
                 }
             });
         }
@@ -275,13 +278,13 @@ export class StatusBarItem {
         }
         else if(this.HasExpiration && this.IsExpired)
         {
-            this.ToolTip = this.ActiveProfile + " Profile Aws Credentials Expired !!!";
-            this.Text = "$(cloud) " + this.ExpireTime;
+            this.ToolTip = "Profile:" + this.ActiveProfile + " Expired !!!";
+            this.Text = "$(cloud) Expired";
         }
         else if(this.HasExpiration && !this.IsExpired)
         {
-            this.ToolTip = this.ActiveProfile + " Profile Aws Credentials Will Expire in " + this.ExpireTime;
-            this.Text = "$(cloud) " + this.ExpireTime;
+            this.ToolTip = "Profile:" + this.ActiveProfile + " will expire on " + this.ExpirationDateString;
+            this.Text = "$(cloud) Expire In " + this.ExpireTime;
         }
         else
         {
@@ -296,24 +299,40 @@ export class StatusBarItem {
     {
         ui.logToOutput('StatusBarItem.StatusBarClicked Started');
 
-        if (StatusBarItem.Current.CredentialsState === CredentialsState.HasNoCredentials)
+        if (!StatusBarItem.Current.HasCredentials)
         {
             ui.showInfoMessage("No Aws Credentials Found");
         }
-        else if (StatusBarItem.Current.CredentialsState === CredentialsState.HasExpiredCredentials)
+        else if (StatusBarItem.Current.HasExpiration)
         {
-            ui.showInfoMessage("No Aws Credentials Expired");
-        }
-        else if (StatusBarItem.Current.CredentialsState === CredentialsState.HasCloseToExpireCredentials)
-        {
-            ui.showInfoMessage("Aws Credentials Will Expire in" + StatusBarItem.Current.ExpireTime);
+            ui.showInfoMessage("Aws Credentials Will Expire in" + StatusBarItem.Current.ExpireTime + " on " + StatusBarItem.Current.ExpirationDateString);
         }
         else
         {
 
-
         }
 
     }
+
+    public SaveState() {
+		ui.logToOutput('StatusBarItem.SaveState Started');
+		try {
+			this.context.globalState.update('ActiveProfile', this.ActiveProfile);
+
+		} catch (error) {
+			ui.logToOutput("StatusBarItem.SaveState Error !!!");
+		}
+	}
+
+    public LoadState() {
+		ui.logToOutput('StatusBarItem.LoadState Started');
+		try {
+			let ActiveProfileTemp:string | undefined  = this.context.globalState.get('ActiveProfile');
+			if (ActiveProfileTemp) { this.ActiveProfile = ActiveProfileTemp; }
+
+		} catch (error) {
+			ui.logToOutput("dagTreeView.LoadState Error !!!");
+		}
+	}
 
 }

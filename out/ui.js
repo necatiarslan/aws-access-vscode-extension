@@ -81,7 +81,14 @@ function convertMsToTime(milliseconds) {
     const hours = Math.floor(minutes / 60);
     seconds = seconds % 60;
     minutes = minutes % 60;
-    return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
+    let result;
+    if (hours === 0) {
+        result = `${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
+    }
+    else {
+        result = `${padTo2Digits(hours)}:${padTo2Digits(minutes)}`;
+    }
+    return result;
 }
 exports.convertMsToTime = convertMsToTime;
 function isJsonString(jsonString) {
