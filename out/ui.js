@@ -9,7 +9,7 @@ var logsOutputChannel;
 var NEW_LINE = "\n\n";
 function showOutputMessage(message, popupMessage = "Results are printed to OUTPUT / AwsAccess-Extension") {
     if (!outputChannel) {
-        outputChannel = vscode.window.createOutputChannel("Airflow-Extension");
+        outputChannel = vscode.window.createOutputChannel("AwsAccess-Extension");
     }
     outputChannel.clear();
     if (typeof message === "object") {

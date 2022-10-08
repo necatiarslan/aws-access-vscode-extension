@@ -37,6 +37,14 @@ export function activate(context: vscode.ExtensionContext) {
 		StatusBar.StatusBarItem.Current.SetActiveProfile();
 	});
 
+	vscode.commands.registerCommand('aws-access-vscode-extension.ShowActiveCredentials', () => {
+		StatusBar.StatusBarItem.Current.ShowActiveCredentials();
+	});
+
+	vscode.commands.registerCommand('aws-access-vscode-extension.ShowDefaultCredentials', () => {
+		StatusBar.StatusBarItem.Current.ShowDefaultCredentials();
+	});
+
 }
 
 export function deactivate() {

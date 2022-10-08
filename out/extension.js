@@ -28,6 +28,12 @@ function activate(context) {
     vscode.commands.registerCommand('aws-access-vscode-extension.SetActiveProfile', () => {
         StatusBar.StatusBarItem.Current.SetActiveProfile();
     });
+    vscode.commands.registerCommand('aws-access-vscode-extension.ShowActiveCredentials', () => {
+        StatusBar.StatusBarItem.Current.ShowActiveCredentials();
+    });
+    vscode.commands.registerCommand('aws-access-vscode-extension.ShowDefaultCredentials', () => {
+        StatusBar.StatusBarItem.Current.ShowDefaultCredentials();
+    });
 }
 exports.activate = activate;
 function deactivate() {

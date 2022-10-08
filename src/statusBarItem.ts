@@ -54,6 +54,11 @@ export class StatusBarItem {
         return this.Credentials !== undefined;
     }
 
+    public get HasDefaultCredentials():boolean
+    {
+        return this.Profiles.includes("default");
+    }
+
     public get HasExpiration():boolean{
         if(this.Credentials && this.Credentials.expiration)
         {
@@ -151,6 +156,37 @@ export class StatusBarItem {
         else
         {
             ui.showWarningMessage("No Profiles Found !!!");
+        }
+    }
+
+    public ShowActiveCredentials(){
+        ui.logToOutput('StatusBarItem.ShowActiveCredentials Started');
+        if(this.HasCredentials)
+        {
+            ui.showOutputMessage(this.Credentials);
+        }
+        else
+        {
+            ui.showWarningMessage("No Profiles Found !!!");
+        }
+    }
+
+    public ShowDefaultCredentials(){
+        ui.logToOutput('StatusBarItem.ShowDefaultCredentials Started');
+        if(this.HasDefaultCredentials)
+        {
+            let provider = api.getDefaultCredentials("default");
+
+            provider.then( credentials => {
+                ui.showOutputMessage(credentials);
+            })
+            .catch((error) => {
+                ui.showWarningMessage('Default Credentials NOT Found');
+            });
+        }
+        else
+        {
+            ui.showWarningMessage("Default Credentials NOT Found");
         }
     }
 

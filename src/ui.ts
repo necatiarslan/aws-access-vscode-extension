@@ -10,7 +10,7 @@ var NEW_LINE:string = "\n\n";
 export function showOutputMessage(message: any, popupMessage: string = "Results are printed to OUTPUT / AwsAccess-Extension"): void {
 
   if (!outputChannel) {
-    outputChannel = vscode.window.createOutputChannel("Airflow-Extension");
+    outputChannel = vscode.window.createOutputChannel("AwsAccess-Extension");
   }
 
   outputChannel.clear();

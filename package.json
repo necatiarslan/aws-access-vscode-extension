@@ -48,6 +48,14 @@
       {
         "command": "aws-access-vscode-extension.SetTimeoutErrorTime",
         "title": "Aws Access:Set Timeout Error Time"
+      },
+      {
+        "command": "aws-access-vscode-extension.ShowActiveCredentials",
+        "title": "Aws Access:Show Active Credentials"
+      },
+      {
+        "command": "aws-access-vscode-extension.ShowDefaultCredentials",
+        "title": "Aws Access:Show Default Credentials"
       }
     ]
   },

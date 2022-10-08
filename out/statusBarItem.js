@@ -38,6 +38,9 @@ class StatusBarItem {
     get HasCredentials() {
         return this.Credentials !== undefined;
     }
+    get HasDefaultCredentials() {
+        return this.Profiles.includes("default");
+    }
     get HasExpiration() {
         if (this.Credentials && this.Credentials.expiration) {
             return true;
@@ -114,6 +117,30 @@ class StatusBarItem {
         }
         else {
             ui.showWarningMessage("No Profiles Found !!!");
+        }
+    }
+    ShowActiveCredentials() {
+        ui.logToOutput('StatusBarItem.ShowActiveCredentials Started');
+        if (this.HasCredentials) {
+            ui.showOutputMessage(this.Credentials);
+        }
+        else {
+            ui.showWarningMessage("No Profiles Found !!!");
+        }
+    }
+    ShowDefaultCredentials() {
+        ui.logToOutput('StatusBarItem.ShowDefaultCredentials Started');
+        if (this.HasDefaultCredentials) {
+            let provider = api.getDefaultCredentials("default");
+            provider.then(credentials => {
+                ui.showOutputMessage(credentials);
+            })
+                .catch((error) => {
+                ui.showWarningMessage('Default Credentials NOT Found');
+            });
+        }
+        else {
+            ui.showWarningMessage("Default Credentials NOT Found");
         }
     }
     ListAwsProfiles() {
