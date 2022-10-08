@@ -5,6 +5,7 @@ exports.StatusBarItem = exports.CredentialsState = void 0;
 const vscode = require("vscode");
 const api = require("./api");
 const ui = require("./ui");
+const fs_1 = require("fs");
 var CredentialsState;
 (function (CredentialsState) {
     CredentialsState[CredentialsState["Unknown"] = 0] = "Unknown";
@@ -40,6 +41,34 @@ class StatusBarItem {
     }
     get HasDefaultCredentials() {
         return this.Profiles.includes("default");
+    }
+    OpenCredentialsFile() {
+        if (this.HasCredentials) {
+            let filePath = api.getCredentialsFilepath();
+            if ((0, fs_1.existsSync)(filePath)) {
+                ui.openFile(filePath);
+            }
+            else {
+                ui.showWarningMessage("Credentials File NOT Found Path=" + filePath);
+            }
+        }
+        else {
+            ui.showWarningMessage("Credentials File NOT Found");
+        }
+    }
+    OpenConfigFile() {
+        if (this.HasCredentials) {
+            let filePath = api.getConfigFilepath();
+            if ((0, fs_1.existsSync)(filePath)) {
+                ui.openFile(filePath);
+            }
+            else {
+                ui.showWarningMessage("Config File NOT Found Path=" + filePath);
+            }
+        }
+        else {
+            ui.showWarningMessage("Config File NOT Found");
+        }
     }
     get HasExpiration() {
         if (this.Credentials && this.Credentials.expiration) {
@@ -183,7 +212,7 @@ class StatusBarItem {
             this.Text = "$(cloud) " + this.ExpireTime;
         }
         else {
-            this.ToolTip = this.ActiveProfile + " Profile Aws Credentials Are Set";
+            this.ToolTip = "Profile:" + this.ActiveProfile;
             this.Text = "$(cloud) Aws $(check)";
         }
         this.awsAccessStatusBarItem.tooltip = this.ToolTip;

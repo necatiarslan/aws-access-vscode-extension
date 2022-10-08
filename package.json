@@ -56,6 +56,14 @@
       {
         "command": "aws-access-vscode-extension.ShowDefaultCredentials",
         "title": "Aws Access:Show Default Credentials"
+      },
+      {
+        "command": "aws-access-vscode-extension.OpenCredentialsFile",
+        "title": "Aws Access:Open Credentials File"
+      },
+      {
+        "command": "aws-access-vscode-extension.OpenConfigFile",
+        "title": "Aws Access:Open Config File"
       }
     ]
   },

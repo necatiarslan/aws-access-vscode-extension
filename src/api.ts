@@ -35,3 +35,6 @@ export const getHomeDir = (): string => {
 
 export const getCredentialsFilepath = () =>
   process.env[ENV_CREDENTIALS_PATH] || join(getHomeDir(), ".aws", "credentials");
+
+export const getConfigFilepath = () =>
+  process.env[ENV_CREDENTIALS_PATH] || join(getHomeDir(), ".aws", "config");

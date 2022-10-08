@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import * as api from './api';
 import * as ui from './ui';
 import { Credentials } from "@aws-sdk/types";
+import { existsSync } from 'fs';
 
 export enum CredentialsState {
     Unknown = 0,
@@ -57,6 +58,46 @@ export class StatusBarItem {
     public get HasDefaultCredentials():boolean
     {
         return this.Profiles.includes("default");
+    }
+
+    public OpenCredentialsFile()
+    {
+        if(this.HasCredentials)
+        {
+            let filePath = api.getCredentialsFilepath();
+            if (existsSync(filePath))
+            {
+                ui.openFile(filePath);
+            }
+            else
+            {
+                ui.showWarningMessage("Credentials File NOT Found Path=" + filePath);
+            }
+        }
+        else
+        {
+            ui.showWarningMessage("Credentials File NOT Found");
+        }
+    }
+
+    public OpenConfigFile()
+    {
+        if(this.HasCredentials)
+        {
+            let filePath = api.getConfigFilepath();
+            if (existsSync(filePath))
+            {
+                ui.openFile(filePath);
+            }
+            else
+            {
+                ui.showWarningMessage("Config File NOT Found Path=" + filePath);
+            }
+        }
+        else
+        {
+            ui.showWarningMessage("Config File NOT Found");
+        }
     }
 
     public get HasExpiration():boolean{
@@ -244,7 +285,7 @@ export class StatusBarItem {
         }
         else
         {
-            this.ToolTip = this.ActiveProfile + " Profile Aws Credentials Are Set";
+            this.ToolTip = "Profile:" + this.ActiveProfile;
             this.Text = "$(cloud) Aws $(check)";
         }
         this.awsAccessStatusBarItem.tooltip = this.ToolTip;

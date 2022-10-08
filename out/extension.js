@@ -34,6 +34,12 @@ function activate(context) {
     vscode.commands.registerCommand('aws-access-vscode-extension.ShowDefaultCredentials', () => {
         StatusBar.StatusBarItem.Current.ShowDefaultCredentials();
     });
+    vscode.commands.registerCommand('aws-access-vscode-extension.OpenCredentialsFile', () => {
+        StatusBar.StatusBarItem.Current.OpenCredentialsFile();
+    });
+    vscode.commands.registerCommand('aws-access-vscode-extension.OpenConfigFile', () => {
+        StatusBar.StatusBarItem.Current.OpenConfigFile();
+    });
 }
 exports.activate = activate;
 function deactivate() {

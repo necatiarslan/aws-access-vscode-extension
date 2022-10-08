@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.getDefaultCredentials = void 0;
+exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.getDefaultCredentials = void 0;
 const credential_provider_node_1 = require("@aws-sdk/credential-provider-node");
 const os_1 = require("os");
 const path_1 = require("path");
@@ -35,4 +35,6 @@ const getHomeDir = () => {
 exports.getHomeDir = getHomeDir;
 const getCredentialsFilepath = () => process.env[exports.ENV_CREDENTIALS_PATH] || (0, path_2.join)((0, exports.getHomeDir)(), ".aws", "credentials");
 exports.getCredentialsFilepath = getCredentialsFilepath;
+const getConfigFilepath = () => process.env[exports.ENV_CREDENTIALS_PATH] || (0, path_2.join)((0, exports.getHomeDir)(), ".aws", "config");
+exports.getConfigFilepath = getConfigFilepath;
 //# sourceMappingURL=api.js.map
