@@ -22,12 +22,12 @@ class StatusBarItem {
         this.awsAccessStatusBarItem.tooltip = this.ToolTip;
         context.subscriptions.push(this.awsAccessStatusBarItem);
         this.awsAccessStatusBarItem.show();
-        this.LoadState();
         this.ShowLoading();
+        this.LoadState();
         this.GetCredentials();
     }
     StartTimer() {
-        this.Timer = setInterval(StatusBarItem.RefreshExpirationDuration, 1 * 1000);
+        this.Timer = setInterval(StatusBarItem.OnTimerTicked, 1 * 1000);
     }
     StopTimer() {
         clearInterval(this.Timer);
@@ -111,7 +111,6 @@ class StatusBarItem {
     }
     GetCredentials() {
         ui.logToOutput('StatusBarItem.GetDefaultCredentials Started');
-        this.Text = StatusBarItem.LoadingText;
         let profileData = api.getIniProfileData();
         profileData.then((value) => {
             ui.logToOutput('StatusBarItem.GetCredentials IniData Found');
@@ -127,7 +126,7 @@ class StatusBarItem {
         provider.then(credentials => {
             ui.logToOutput('StatusBarItem.GetCredentials Credentials Found');
             this.Credentials = credentials;
-            if (this.HasExpiration) {
+            if (this.HasExpiration && !this.IsExpired) {
                 this.StartTimer();
             }
         })
@@ -139,7 +138,18 @@ class StatusBarItem {
     }
     SetAwsLoginCommand() {
         ui.logToOutput('StatusBarItem.SetAwsLoginCommand Started');
-        ui.showInfoMessage("Development In Progress...");
+        let thenableResult = vscode.window.showInputBox({ placeHolder: 'Aws Login Shell Command' });
+        thenableResult.then((value) => {
+            if (value && value.length >= 3) {
+                if (value.length > 0) {
+                    this.AwsLoginShellCommand = value;
+                }
+                else {
+                    this.AwsLoginShellCommand = undefined;
+                }
+                this.SaveState();
+            }
+        });
     }
     SetActiveProfile() {
         ui.logToOutput('StatusBarItem.SetAwsLoginCommand Started');
@@ -148,6 +158,7 @@ class StatusBarItem {
             selected.then(value => {
                 if (value) {
                     this.ActiveProfile = value;
+                    this.ShowLoading();
                     this.GetCredentials();
                     this.SaveState();
                 }
@@ -193,17 +204,18 @@ class StatusBarItem {
             ui.showWarningMessage("No Profiles Found !!!");
         }
     }
-    AutoCallLoginCommand() {
+    RunLoginCommand() {
         ui.logToOutput('StatusBarItem.AutoCallLoginCommand Started');
-        ui.showInfoMessage("Development In Progress...");
-    }
-    SetAutoCallLoginCommandTime() {
-        ui.logToOutput('StatusBarItem.SetAutoCallLoginCommandTime Started');
-        ui.showInfoMessage("Development In Progress...");
-    }
-    SetTimeoutErrorTime() {
-        ui.logToOutput('StatusBarItem.SetTimeoutErrorTime Started');
-        ui.showInfoMessage("Development In Progress...");
+        if (this.AwsLoginShellCommand) {
+            const terminal = vscode.window.createTerminal("Aws Login");
+            terminal.show();
+            terminal.sendText(this.AwsLoginShellCommand);
+            //this.GetCredentials();
+        }
+        else {
+            ui.showWarningMessage("Set a Aws Login Shell Command To Run");
+            //TODO:Open command palet
+        }
     }
     ShowLoading() {
         ui.logToOutput('StatusBarItem.ShowLoading Started');
@@ -230,11 +242,14 @@ class StatusBarItem {
         this.awsAccessStatusBarItem.tooltip = this.ToolTip;
         this.awsAccessStatusBarItem.text = this.Text;
     }
-    static RefreshExpirationDuration() {
+    static OnTimerTicked() {
         if (StatusBarItem.Current.HasExpiration) {
             if (StatusBarItem.Current.IsExpired) {
                 StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile + " Expired !!!";
                 StatusBarItem.Current.Text = "$(cloud) Expired";
+                if (StatusBarItem.Current.AwsLoginShellCommand) {
+                    StatusBarItem.Current.RunLoginCommand();
+                }
                 StatusBarItem.Current.StopTimer();
             }
             else {
@@ -254,6 +269,7 @@ class StatusBarItem {
         ui.logToOutput('StatusBarItem.SaveState Started');
         try {
             this.context.globalState.update('ActiveProfile', this.ActiveProfile);
+            this.context.globalState.update('AwsLoginShellCommand', this.AwsLoginShellCommand);
         }
         catch (error) {
             ui.logToOutput("StatusBarItem.SaveState Error !!!");
@@ -265,6 +281,10 @@ class StatusBarItem {
             let ActiveProfileTemp = this.context.globalState.get('ActiveProfile');
             if (ActiveProfileTemp) {
                 this.ActiveProfile = ActiveProfileTemp;
+            }
+            let AwsLoginShellCommandTemp = this.context.globalState.get('AwsLoginShellCommand');
+            if (AwsLoginShellCommandTemp) {
+                this.AwsLoginShellCommand = AwsLoginShellCommandTemp;
             }
         }
         catch (error) {

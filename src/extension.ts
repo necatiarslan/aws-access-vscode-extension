@@ -21,16 +21,8 @@ export function activate(context: vscode.ExtensionContext) {
 		StatusBar.StatusBarItem.Current.ListAwsProfiles();
 	});
 
-	vscode.commands.registerCommand('aws-access-vscode-extension.AutoCallLoginCommand', () => {
-		StatusBar.StatusBarItem.Current.AutoCallLoginCommand();
-	});
-
-	vscode.commands.registerCommand('aws-access-vscode-extension.SetAutoCallLoginCommandTime', () => {
-		StatusBar.StatusBarItem.Current.SetAutoCallLoginCommandTime();
-	});
-
-	vscode.commands.registerCommand('aws-access-vscode-extension.SetTimeoutErrorTime', () => {
-		StatusBar.StatusBarItem.Current.SetTimeoutErrorTime();
+	vscode.commands.registerCommand('aws-access-vscode-extension.RunLoginCommand', () => {
+		StatusBar.StatusBarItem.Current.RunLoginCommand();
 	});
 
 	vscode.commands.registerCommand('aws-access-vscode-extension.SetActiveProfile', () => {

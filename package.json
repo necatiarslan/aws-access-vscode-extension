@@ -34,20 +34,12 @@
         "title": "Aws Access:List Profiles"
       },
       {
-        "command": "aws-access-vscode-extension.AutoCallLoginCommand",
-        "title": "Aws Access:Auto Call Login Command"
-      },
-      {
-        "command": "aws-access-vscode-extension.SetAutoCallLoginCommandTime",
-        "title": "Aws Access:Set Auto Call Login Command Time"
+        "command": "aws-access-vscode-extension.RunLoginCommand",
+        "title": "Aws Access:Run Login Command"
       },
       {
         "command": "aws-access-vscode-extension.SetActiveProfile",
         "title": "Aws Access:Set Active Profile"
-      },
-      {
-        "command": "aws-access-vscode-extension.SetTimeoutErrorTime",
-        "title": "Aws Access:Set Timeout Error Time"
       },
       {
         "command": "aws-access-vscode-extension.ShowActiveCredentials",
