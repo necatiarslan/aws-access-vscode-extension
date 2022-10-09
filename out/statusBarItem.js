@@ -25,7 +25,12 @@ class StatusBarItem {
         this.LoadState();
         this.ShowLoading();
         this.GetCredentials();
-        this.ExpirationCheckInterval = setInterval(StatusBarItem.RefreshExpirationDuration, 1 * 1000);
+    }
+    StartTimer() {
+        this.Timer = setInterval(StatusBarItem.RefreshExpirationDuration, 1 * 1000);
+    }
+    StopTimer() {
+        clearInterval(this.Timer);
     }
     get Profiles() {
         let result = [];
@@ -122,6 +127,9 @@ class StatusBarItem {
         provider.then(credentials => {
             ui.logToOutput('StatusBarItem.GetCredentials Credentials Found');
             this.Credentials = credentials;
+            if (this.HasExpiration) {
+                this.StartTimer();
+            }
         })
             .catch((error) => {
             ui.logToOutput('StatusBarItem.GetCredentials Credentials NOT Found ' + error);
@@ -152,7 +160,10 @@ class StatusBarItem {
     ShowActiveCredentials() {
         ui.logToOutput('StatusBarItem.ShowActiveCredentials Started');
         if (this.HasCredentials) {
-            ui.showOutputMessage(this.Credentials);
+            //ui.showOutputMessage(this.Credentials);
+            if (this.IniData) {
+                ui.showOutputMessage(this.IniData[this.ActiveProfile]);
+            }
         }
         else {
             ui.showWarningMessage("No Profiles Found !!!");
@@ -224,6 +235,7 @@ class StatusBarItem {
             if (StatusBarItem.Current.IsExpired) {
                 StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile + " Expired !!!";
                 StatusBarItem.Current.Text = "$(cloud) Expired";
+                StatusBarItem.Current.StopTimer();
             }
             else {
                 StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile + " will expire on " + StatusBarItem.Current.ExpirationDateString;

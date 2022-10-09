@@ -22,7 +22,7 @@ export class StatusBarItem {
     public ActiveProfile:string = "default";
     public IniData:ParsedIniData | undefined;
 
-    public ExpirationCheckInterval: NodeJS.Timer;
+    public Timer: NodeJS.Timer | undefined;
 
 
 	constructor(context: vscode.ExtensionContext) {
@@ -43,9 +43,16 @@ export class StatusBarItem {
         this.LoadState();
         this.ShowLoading();
         this.GetCredentials();
-
-        this.ExpirationCheckInterval = setInterval(StatusBarItem.RefreshExpirationDuration, 1 * 1000);
 	}
+
+    public StartTimer()
+    {
+        this.Timer = setInterval(StatusBarItem.RefreshExpirationDuration, 1 * 1000);
+    }
+
+    public StopTimer(){
+        clearInterval(this.Timer);
+    }
 
     public get Profiles():string[]{
         let result:string[] = [];
@@ -183,6 +190,11 @@ export class StatusBarItem {
 		provider.then( credentials => {
             ui.logToOutput('StatusBarItem.GetCredentials Credentials Found');
             this.Credentials = credentials;
+
+            if(this.HasExpiration)
+            {
+                this.StartTimer();
+            }
 		})
 		.catch((error) => {
             ui.logToOutput('StatusBarItem.GetCredentials Credentials NOT Found ' + error);
@@ -219,7 +231,11 @@ export class StatusBarItem {
         ui.logToOutput('StatusBarItem.ShowActiveCredentials Started');
         if(this.HasCredentials)
         {
-            ui.showOutputMessage(this.Credentials);
+            //ui.showOutputMessage(this.Credentials);
+            if(this.IniData)
+            {
+                ui.showOutputMessage(this.IniData[this.ActiveProfile]);
+            }
         }
         else
         {
@@ -315,6 +331,8 @@ export class StatusBarItem {
             {
                 StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile + " Expired !!!";
                 StatusBarItem.Current.Text = "$(cloud) Expired";
+
+                StatusBarItem.Current.StopTimer();
             }
             else 
             {
