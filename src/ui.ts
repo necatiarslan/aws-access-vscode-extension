@@ -7,13 +7,16 @@ var logsOutputChannel: vscode.OutputChannel;
 
 var NEW_LINE:string = "\n\n";
 
-export function showOutputMessage(message: any, popupMessage: string = "Results are printed to OUTPUT / AwsAccess-Extension"): void {
+export function showOutputMessage(message: any, popupMessage: string = "Results are printed to OUTPUT / AwsAccess-Extension", clearPrevMessages:boolean=true): void {
 
   if (!outputChannel) {
     outputChannel = vscode.window.createOutputChannel("AwsAccess-Extension");
   }
 
-  outputChannel.clear();
+  if(clearPrevMessages)
+  {
+    outputChannel.clear();
+  }
 
   if (typeof message === "object") {
     outputChannel.appendLine(JSON.stringify(message, null, 4));
@@ -22,7 +25,11 @@ export function showOutputMessage(message: any, popupMessage: string = "Results 
     outputChannel.appendLine(message);
   }
   outputChannel.show();
-  showInfoMessage(popupMessage);
+
+  if(popupMessage.length > 0)
+  {
+    showInfoMessage(popupMessage);
+  }
 }
 
 export function logToOutput(message: any): void {

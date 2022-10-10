@@ -170,15 +170,17 @@ class StatusBarItem {
     }
     ShowActiveCredentials() {
         ui.logToOutput('StatusBarItem.ShowActiveCredentials Started');
+        ui.showOutputMessage("ActiveProfile: " + this.ActiveProfile, "");
         if (this.HasCredentials) {
             //ui.showOutputMessage(this.Credentials);
             if (this.IniData) {
-                ui.showOutputMessage(this.IniData[this.ActiveProfile]);
+                ui.showOutputMessage(this.IniData[this.ActiveProfile], "", false);
             }
         }
         else {
             ui.showWarningMessage("No Profiles Found !!!");
         }
+        ui.showOutputMessage("AwsLoginShellCommand: " + this.AwsLoginShellCommand, "", false);
     }
     ShowDefaultCredentials() {
         ui.logToOutput('StatusBarItem.ShowDefaultCredentials Started');

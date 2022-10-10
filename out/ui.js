@@ -7,11 +7,13 @@ const path_1 = require("path");
 var outputChannel;
 var logsOutputChannel;
 var NEW_LINE = "\n\n";
-function showOutputMessage(message, popupMessage = "Results are printed to OUTPUT / AwsAccess-Extension") {
+function showOutputMessage(message, popupMessage = "Results are printed to OUTPUT / AwsAccess-Extension", clearPrevMessages = true) {
     if (!outputChannel) {
         outputChannel = vscode.window.createOutputChannel("AwsAccess-Extension");
     }
-    outputChannel.clear();
+    if (clearPrevMessages) {
+        outputChannel.clear();
+    }
     if (typeof message === "object") {
         outputChannel.appendLine(JSON.stringify(message, null, 4));
     }
@@ -19,7 +21,9 @@ function showOutputMessage(message, popupMessage = "Results are printed to OUTPU
         outputChannel.appendLine(message);
     }
     outputChannel.show();
-    showInfoMessage(popupMessage);
+    if (popupMessage.length > 0) {
+        showInfoMessage(popupMessage);
+    }
 }
 exports.showOutputMessage = showOutputMessage;
 function logToOutput(message) {
