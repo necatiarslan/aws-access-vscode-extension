@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loadSharedConfigFiles = void 0;
-const getConfigFilepath_1 = require("./aws-sdk/getConfigFilepath");
+const getConfigFilepath_1 = require("./getConfigFilepath");
 const getCredentialsFilepath_1 = require("./getCredentialsFilepath");
 const getProfileData_1 = require("./getProfileData");
 const parseIni_1 = require("./parseIni");

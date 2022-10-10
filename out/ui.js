@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isValidDate = exports.isJsonString = exports.convertMsToTime = exports.getDuration = exports.openFile = exports.getExtensionVersion = exports.showErrorMessage = exports.showWarningMessage = exports.showInfoMessage = exports.logToOutput = exports.showOutputMessage = void 0;
+exports.isValidDate = exports.isJsonString = exports.convertMsToTime = exports.getDuration = exports.getSeconds = exports.getMilliSeconds = exports.openFile = exports.getExtensionVersion = exports.showErrorMessage = exports.showWarningMessage = exports.showInfoMessage = exports.logToOutput = exports.showOutputMessage = void 0;
 const vscode = require("vscode");
 const fs_1 = require("fs");
 const path_1 = require("path");
@@ -68,14 +68,25 @@ exports.openFile = openFile;
 function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
 }
-function getDuration(startDate, endDate) {
+function getMilliSeconds(startDate, endDate) {
     if (!startDate) {
-        return "";
+        return 0;
     }
     if (!endDate || endDate < startDate) {
         endDate = new Date(); //now
     }
-    var duration = endDate.valueOf() - startDate.valueOf();
+    return endDate.valueOf() - startDate.valueOf();
+}
+exports.getMilliSeconds = getMilliSeconds;
+function getSeconds(startDate, endDate) {
+    return Math.floor(getMilliSeconds(startDate, endDate) / 1000);
+}
+exports.getSeconds = getSeconds;
+function getDuration(startDate, endDate) {
+    if (!startDate) {
+        return "";
+    }
+    var duration = getMilliSeconds(startDate, endDate);
     return (convertMsToTime(duration));
 }
 exports.getDuration = getDuration;

@@ -12,8 +12,6 @@ export class StatusBarItem {
     public context: vscode.ExtensionContext;
     public awsAccessStatusBarItem: vscode.StatusBarItem;
 
-    public Credentials:Credentials | undefined;
-
     public Text: string = StatusBarItem.LoadingText;
     public ToolTip:string = "Loading ...";
 
@@ -21,6 +19,8 @@ export class StatusBarItem {
     public IniData:ParsedIniData | undefined;
     public AwsLoginShellCommand:string | undefined;
     public Timer: NodeJS.Timer | undefined;
+
+    public IsAwsLoginCommandExecuted:boolean = false;
 
 
 	constructor(context: vscode.ExtensionContext) {
@@ -62,7 +62,7 @@ export class StatusBarItem {
 
     public get HasCredentials():boolean
     {
-        return this.Credentials !== undefined;
+        return this.IniData !== undefined;
     }
 
     public get HasDefaultCredentials():boolean
@@ -138,7 +138,7 @@ export class StatusBarItem {
     }
 
     public get HasExpiration():boolean{
-        if(this.Credentials && this.ExpirationDateString)
+        if(this.HasCredentials && this.ExpirationDateString)
         {
             return true;
         }
@@ -183,32 +183,25 @@ export class StatusBarItem {
         profileData.then( (value:ParsedIniData) => {
             ui.logToOutput('StatusBarItem.GetCredentials IniData Found');
             this.IniData = value;
-        }).catch((error) => {
-            ui.logToOutput('StatusBarItem.GetCredentials IniData NOT Found ' + error);
-		});
 
-        if(!this.Profiles.includes(this.ActiveProfile) && this.Profiles.length > 0)
-        {
-            this.ActiveProfile = this.Profiles[0];
-            this.SaveState();
-        }
+            if(!this.Profiles.includes(this.ActiveProfile) && this.Profiles.length > 0)
+            {
+                this.ActiveProfile = this.Profiles[0];
+                this.SaveState();
+            }
 
-        let provider = api.getDefaultCredentials(this.ActiveProfile);
-
-		provider.then( credentials => {
-            ui.logToOutput('StatusBarItem.GetCredentials Credentials Found');
-            this.Credentials = credentials;
-
-            if(this.HasExpiration && !this.IsExpired)
+            if(this.HasExpiration)
             {
                 this.StartTimer();
             }
-		})
-		.catch((error) => {
-            ui.logToOutput('StatusBarItem.GetCredentials Credentials NOT Found ' + error);
-		}).finally(()=>{
+
+        }).catch((error) => {
+            ui.logToOutput('StatusBarItem.GetCredentials IniData NOT Found ' + error);
+		}).finally(() => {
             this.RefreshText();
         });
+
+ 
     }
 
     public SetAwsLoginCommand(){
@@ -272,16 +265,9 @@ export class StatusBarItem {
 
     public ShowDefaultCredentials(){
         ui.logToOutput('StatusBarItem.ShowDefaultCredentials Started');
-        if(this.HasDefaultCredentials)
+        if(this.IniData && this.HasDefaultCredentials)
         {
-            let provider = api.getDefaultCredentials("default");
-
-            provider.then( credentials => {
-                ui.showOutputMessage(credentials);
-            })
-            .catch((error) => {
-                ui.showWarningMessage('Default Credentials NOT Found');
-            });
+            ui.showOutputMessage(this.IniData["default"]);
         }
         else
         {
@@ -309,7 +295,7 @@ export class StatusBarItem {
             const terminal = vscode.window.createTerminal("Aws Login");
             terminal.show();
             terminal.sendText(this.AwsLoginShellCommand);
-            //this.GetCredentials();
+            this.GetCredentials();
         }
         else
         {
@@ -358,17 +344,24 @@ export class StatusBarItem {
                 StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile + " Expired !!!";
                 StatusBarItem.Current.Text = "$(cloud) Expired";
 
-                if(StatusBarItem.Current.AwsLoginShellCommand)
-                {
-                    StatusBarItem.Current.RunLoginCommand();
-                }
-
                 StatusBarItem.Current.StopTimer();
+                StatusBarItem.Current.IsAwsLoginCommandExecuted =false;
             }
             else 
             {
                 StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile;
                 StatusBarItem.Current.Text = "$(cloud) Expire In " + StatusBarItem.Current.ExpireTime;
+
+                if(StatusBarItem.Current.ExpirationDateString && !StatusBarItem.Current.IsAwsLoginCommandExecuted )
+                {
+                    let expireDate = new Date(StatusBarItem.Current.ExpirationDateString);
+                    let now = new Date();
+                    if(ui.getSeconds(now, expireDate) === 0 && StatusBarItem.Current.AwsLoginShellCommand)
+                    {
+                        StatusBarItem.Current.RunLoginCommand();
+                        StatusBarItem.Current.IsAwsLoginCommandExecuted = true;
+                    }
+                }
             }
 
             StatusBarItem.Current.awsAccessStatusBarItem.tooltip = StatusBarItem.Current.ToolTip;

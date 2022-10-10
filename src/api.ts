@@ -1,19 +1,8 @@
-import { defaultProvider, DefaultProviderInit } from '@aws-sdk/credential-provider-node';
-import { Credentials } from "@aws-sdk/types";
 import { homedir } from "os";
 import { sep } from "path";
 import { join } from "path";
-import { parseKnownFiles, SourceProfileInit } from "./parseKnownFiles";
+import { parseKnownFiles, SourceProfileInit } from "./aws-sdk/parseKnownFiles";
 import { ParsedIniData } from "@aws-sdk/types";
-
-
-export async function getDefaultCredentials(profile:string):Promise<Credentials>
-{
-    let init:DefaultProviderInit = { profile:profile };
-    const provider = defaultProvider(init);
-    const credential = provider();
-    return credential;
-}
 
 export async function getIniProfileData(init: SourceProfileInit = {}):Promise<ParsedIniData>
 {

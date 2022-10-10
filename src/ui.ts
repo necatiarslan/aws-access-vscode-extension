@@ -79,10 +79,10 @@ function padTo2Digits(num: number) {
   return num.toString().padStart(2, '0');
 }
 
-export function getDuration(startDate: Date, endDate: Date): string {
+export function getMilliSeconds(startDate: Date, endDate: Date):number{
   if(!startDate)
   {
-    return "";
+    return 0;
   }
 
   if(!endDate || endDate < startDate)
@@ -90,11 +90,27 @@ export function getDuration(startDate: Date, endDate: Date): string {
     endDate = new Date();//now
   }
 
-  var duration = endDate.valueOf() - startDate.valueOf();
+  return endDate.valueOf() - startDate.valueOf();
+}
+
+export function getSeconds(startDate: Date, endDate: Date): number 
+{
+  return Math.floor(getMilliSeconds(startDate, endDate) / 1000);
+}
+
+export function getDuration(startDate: Date, endDate: Date): string 
+{
+  if(!startDate)
+  {
+    return "";
+  }
+
+  var duration = getMilliSeconds(startDate, endDate);
   return (convertMsToTime(duration));
 }
 
-export function convertMsToTime(milliseconds: number): string {
+export function convertMsToTime(milliseconds: number): string 
+{
   let seconds = Math.floor(milliseconds / 1000);
   let minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);

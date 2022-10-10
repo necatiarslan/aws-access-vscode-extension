@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import * as api from './api';
 import * as ui from './ui';
 import * as StatusBar from './statusBarItem';
 

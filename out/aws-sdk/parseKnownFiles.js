@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseKnownFiles = void 0;
-const loadSharedConfigFiles_1 = require("./aws-sdk/loadSharedConfigFiles");
+const loadSharedConfigFiles_1 = require("./loadSharedConfigFiles");
 /**
  * Load profiles from credentials and config INI files and normalize them into a
  * single profile list.
