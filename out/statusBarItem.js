@@ -271,9 +271,8 @@ class StatusBarItem {
     }
     static StatusBarClicked() {
         ui.logToOutput('StatusBarItem.StatusBarClicked Started');
-        //StatusBarItem.Current.GetCredentials();
-        //ui.showInfoMessage("Aws Credentials Reloaded");
-        StatusBarItem.Current.ShowActiveCredentials();
+        const extensionPrefix = 'Aws Access';
+        vscode.commands.executeCommand('workbench.action.quickOpen', `> ${extensionPrefix}`);
     }
     SaveState() {
         ui.logToOutput('StatusBarItem.SaveState Started');
