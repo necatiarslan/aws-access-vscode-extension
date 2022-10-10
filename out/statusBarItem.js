@@ -206,7 +206,8 @@ class StatusBarItem {
             const terminal = vscode.window.createTerminal("Aws Login");
             terminal.show();
             terminal.sendText(this.AwsLoginShellCommand);
-            this.GetCredentials();
+            ui.showInfoMessage("Run Check Credentials Command after the login");
+            //this.GetCredentials();
         }
         else {
             ui.showWarningMessage("Set a Aws Login Shell Command To Run");
