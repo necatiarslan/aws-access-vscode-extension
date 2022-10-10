@@ -125,6 +125,18 @@ export class StatusBarItem {
         return result;
     }
 
+    public get ExpireDate():Date | undefined
+    {
+        let result:Date | undefined;
+
+        if(this.ExpirationDateString)
+        {
+            result = new Date(this.ExpirationDateString);         
+        }
+
+        return result;
+    }
+
     public get HasExpiration():boolean{
         if(this.Credentials && this.ExpirationDateString)
         {
@@ -355,7 +367,7 @@ export class StatusBarItem {
             }
             else 
             {
-                StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile + " will expire on " + StatusBarItem.Current.ExpirationDateString;
+                StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile;
                 StatusBarItem.Current.Text = "$(cloud) Expire In " + StatusBarItem.Current.ExpireTime;
             }
 
@@ -368,9 +380,9 @@ export class StatusBarItem {
     {
         ui.logToOutput('StatusBarItem.StatusBarClicked Started');
 
-        StatusBarItem.Current.GetCredentials();
-        ui.showInfoMessage("Aws Credentials Reloaded");
-
+        //StatusBarItem.Current.GetCredentials();
+        //ui.showInfoMessage("Aws Credentials Reloaded");
+        StatusBarItem.Current.ShowActiveCredentials();
         
     }
 
