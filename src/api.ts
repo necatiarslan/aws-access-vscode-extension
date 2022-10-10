@@ -3,7 +3,7 @@ import { Credentials } from "@aws-sdk/types";
 import { homedir } from "os";
 import { sep } from "path";
 import { join } from "path";
-import { parseKnownFiles, SourceProfileInit } from "@aws-sdk/shared-ini-file-loader";
+import { parseKnownFiles, SourceProfileInit } from "./parseKnownFiles";
 import { ParsedIniData } from "@aws-sdk/types";
 
 

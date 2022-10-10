@@ -5,7 +5,7 @@ const credential_provider_node_1 = require("@aws-sdk/credential-provider-node");
 const os_1 = require("os");
 const path_1 = require("path");
 const path_2 = require("path");
-const shared_ini_file_loader_1 = require("@aws-sdk/shared-ini-file-loader");
+const parseKnownFiles_1 = require("./parseKnownFiles");
 async function getDefaultCredentials(profile) {
     let init = { profile: profile };
     const provider = (0, credential_provider_node_1.defaultProvider)(init);
@@ -14,7 +14,7 @@ async function getDefaultCredentials(profile) {
 }
 exports.getDefaultCredentials = getDefaultCredentials;
 async function getIniProfileData(init = {}) {
-    const profiles = await (0, shared_ini_file_loader_1.parseKnownFiles)(init);
+    const profiles = await (0, parseKnownFiles_1.parseKnownFiles)(init);
     return profiles;
 }
 exports.getIniProfileData = getIniProfileData;
