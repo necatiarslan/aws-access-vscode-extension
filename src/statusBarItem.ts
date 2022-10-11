@@ -295,7 +295,6 @@ export class StatusBarItem {
             const terminal = vscode.window.createTerminal("Aws Login");
             terminal.show();
             terminal.sendText(this.AwsLoginShellCommand + "; exit");
-            ui.showInfoMessage("Run Check Credentials Command after the login");
         }
         else
         {
