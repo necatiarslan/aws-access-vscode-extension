@@ -4,6 +4,11 @@ Helps you to manage your local AWS Access Credentials.\
 Apps use this credentials to access AWS resources.\
 This extension especially developed to monitor Aws Access Tokens which has a Expire Time and run a Aws Login Command to renew this token. You can see a countdown next to cloud icon.
 
+## Shared credentials and config ini files
+Aws access credentials lives in the files below
+    - On Linux, Unix, and macOS: ~/.aws/credentials
+    - On Windows: C:\Users\USER_NAME\.aws\credentials
+
 ## Profiles
 You could have more then one credentials which is called Profiles.\
 If you do not set a profile while calling an AWS resource through the AWS API, api will use default profile.
@@ -20,7 +25,7 @@ If you do not set a profile while calling an AWS resource through the AWS API, a
 To report your bugs or request new features, use link below\
 https://github.com/necatiarslan/aws-access-vscode-extension/issues/new
 
-## Credentials Search Order
+## Credentials Search Order (Not Supported Yet)
 The extension will attempt to find credentials from the following sources (listed in order of precedence):
 - Environment variables exposed via process.env
 - SSO credentials from token cache

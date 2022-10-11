@@ -1,7 +1,7 @@
 {
   "name": "aws-access-vscode-extension",
   "displayName": "Aws Access",
-  "description": "This is a vscode extension to monitor your aws access credentials, get notifications when expiration is close and update them",
+  "description": "Monitor your Aws Access Credentials, CountDown to Expiration Time and Auto Refresh Credentials",
   "version": "1.0.1",
   "publisher": "NecatiARSLAN",
   "repository": {
