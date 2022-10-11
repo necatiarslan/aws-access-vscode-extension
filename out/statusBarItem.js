@@ -205,13 +205,18 @@ class StatusBarItem {
         if (this.AwsLoginShellCommand) {
             const terminal = vscode.window.createTerminal("Aws Login");
             terminal.show();
-            terminal.sendText(this.AwsLoginShellCommand);
+            terminal.sendText(this.AwsLoginShellCommand + "; exit");
             ui.showInfoMessage("Run Check Credentials Command after the login");
-            //this.GetCredentials();
         }
         else {
             ui.showWarningMessage("Set a Aws Login Shell Command To Run");
-            //TODO:Open command palet
+            StatusBarItem.OpenCommandPalette();
+        }
+    }
+    onDidCloseTerminal(terminal) {
+        if (terminal.name === "Aws Login") {
+            ui.logToOutput('StatusBarItem.onDidCloseTerminal Started');
+            this.GetCredentials();
         }
     }
     ShowLoading() {
@@ -265,6 +270,9 @@ class StatusBarItem {
     }
     static StatusBarClicked() {
         ui.logToOutput('StatusBarItem.StatusBarClicked Started');
+        StatusBarItem.OpenCommandPalette();
+    }
+    static OpenCommandPalette() {
         const extensionPrefix = 'Aws Access';
         vscode.commands.executeCommand('workbench.action.quickOpen', `> ${extensionPrefix}`);
     }

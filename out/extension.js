@@ -34,6 +34,9 @@ function activate(context) {
     vscode.commands.registerCommand('aws-access-vscode-extension.OpenConfigFile', () => {
         StatusBar.StatusBarItem.Current.OpenConfigFile();
     });
+    vscode.window.onDidCloseTerminal((terminal) => {
+        StatusBar.StatusBarItem.Current.onDidCloseTerminal(terminal);
+    });
 }
 exports.activate = activate;
 function deactivate() {

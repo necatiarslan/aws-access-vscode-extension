@@ -44,6 +44,10 @@ export function activate(context: vscode.ExtensionContext) {
 		StatusBar.StatusBarItem.Current.OpenConfigFile();
 	});
 
+	vscode.window.onDidCloseTerminal((terminal) => {
+			StatusBar.StatusBarItem.Current.onDidCloseTerminal(terminal);
+	});
+
 }
 
 export function deactivate() {

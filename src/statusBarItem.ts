@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import * as api from './api';
 import * as ui from './ui';
 import { Credentials, ParsedIniData } from "@aws-sdk/types";
-import { existsSync } from 'fs';
+import { existsSync, statSync } from 'fs';
 
 export class StatusBarItem {
 
@@ -294,14 +294,22 @@ export class StatusBarItem {
         {
             const terminal = vscode.window.createTerminal("Aws Login");
             terminal.show();
-            terminal.sendText(this.AwsLoginShellCommand);
+            terminal.sendText(this.AwsLoginShellCommand + "; exit");
             ui.showInfoMessage("Run Check Credentials Command after the login");
-            //this.GetCredentials();
         }
         else
         {
             ui.showWarningMessage("Set a Aws Login Shell Command To Run");
-            //TODO:Open command palet
+            StatusBarItem.OpenCommandPalette();
+        }
+    }
+
+    public onDidCloseTerminal(terminal:vscode.Terminal)
+    {
+        if(terminal.name === "Aws Login")
+        {
+            ui.logToOutput('StatusBarItem.onDidCloseTerminal Started');
+            this.GetCredentials();
         }
     }
 
@@ -373,10 +381,13 @@ export class StatusBarItem {
     public static StatusBarClicked()
     {
         ui.logToOutput('StatusBarItem.StatusBarClicked Started');
+        StatusBarItem.OpenCommandPalette();
+    }
 
+    public static OpenCommandPalette()
+    {
         const extensionPrefix = 'Aws Access';
         vscode.commands.executeCommand('workbench.action.quickOpen', `> ${extensionPrefix}`);
-        
     }
 
     public SaveState() {
