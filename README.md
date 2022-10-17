@@ -39,7 +39,7 @@ For more detail on aws credentials
 https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 
 ## TODO:
+- Pause to Run Aws Login Command
 - Aws Login Command from File
 - Test Aws Credentials
-- Show Warning When Expire Time is in 1 min. 
 

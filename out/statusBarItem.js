@@ -205,7 +205,7 @@ class StatusBarItem {
         if (this.AwsLoginShellCommand) {
             const terminal = vscode.window.createTerminal("Aws Login");
             terminal.show();
-            terminal.sendText(this.AwsLoginShellCommand + "; exit");
+            terminal.sendText(this.AwsLoginShellCommand + "; echo 'Terminal Will Close In 5 Secs'; sleep 5; exit");
         }
         else {
             ui.showWarningMessage("Set a Aws Login Shell Command To Run");
