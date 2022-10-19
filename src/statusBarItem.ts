@@ -21,6 +21,7 @@ export class StatusBarItem {
     public Timer: NodeJS.Timer | undefined;
 
     public IsAwsLoginCommandExecuted:boolean = false;
+    public IsAutoLoginPaused:boolean = false;
 
 
 	constructor(context: vscode.ExtensionContext) {
@@ -292,6 +293,12 @@ export class StatusBarItem {
         
         if(this.AwsLoginShellCommand)
         {
+            if(this.IsAutoLoginPaused)
+            {
+                this.GetCredentials();
+                return;
+            }
+
             const terminal = vscode.window.createTerminal("Aws Login");
             terminal.show();
             terminal.sendText(this.AwsLoginShellCommand + "; echo 'Terminal Will Close In 5 Secs'; sleep 5; exit");
@@ -301,6 +308,10 @@ export class StatusBarItem {
             ui.showWarningMessage("Set a Aws Login Shell Command To Run");
             StatusBarItem.OpenCommandPalette();
         }
+    }
+
+    public PauseAutoLogin(){
+        this.IsAutoLoginPaused = !this.IsAutoLoginPaused;
     }
 
     public onDidCloseTerminal(terminal:vscode.Terminal)
@@ -360,10 +371,19 @@ export class StatusBarItem {
                 StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile;
                 StatusBarItem.Current.Text = "$(cloud) Expire In " + StatusBarItem.Current.ExpireTime;
 
+                if(StatusBarItem.Current.IsAutoLoginPaused)
+                {
+                    StatusBarItem.Current.ToolTip += "\nAuto Login Paused";
+                    StatusBarItem.Current.Text += "(P)";
+                }
+
                 if(StatusBarItem.Current.ExpirationDateString && !StatusBarItem.Current.IsAwsLoginCommandExecuted )
                 {
                     let expireDate = new Date(StatusBarItem.Current.ExpirationDateString);
                     let now = new Date();
+
+                    StatusBarItem.Current.ToolTip += "\nExpire Time:" + expireDate.toLocaleTimeString();
+
                     if(ui.getSeconds(now, expireDate) === 0 && StatusBarItem.Current.AwsLoginShellCommand)
                     {
                         StatusBarItem.Current.RunLoginCommand();

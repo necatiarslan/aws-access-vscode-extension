@@ -24,6 +24,10 @@ export function activate(context: vscode.ExtensionContext) {
 		StatusBar.StatusBarItem.Current.RunLoginCommand();
 	});
 
+	vscode.commands.registerCommand('aws-access-vscode-extension.PauseAutoLogin', () => {
+		StatusBar.StatusBarItem.Current.PauseAutoLogin();
+	});
+
 	vscode.commands.registerCommand('aws-access-vscode-extension.SetActiveProfile', () => {
 		StatusBar.StatusBarItem.Current.SetActiveProfile();
 	});

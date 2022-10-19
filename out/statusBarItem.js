@@ -12,6 +12,7 @@ class StatusBarItem {
         this.ToolTip = "Loading ...";
         this.ActiveProfile = "default";
         this.IsAwsLoginCommandExecuted = false;
+        this.IsAutoLoginPaused = false;
         ui.logToOutput('StatusBarItem.constructor Started');
         this.context = context;
         StatusBarItem.Current = this;
@@ -203,6 +204,10 @@ class StatusBarItem {
     RunLoginCommand() {
         ui.logToOutput('StatusBarItem.AutoCallLoginCommand Started');
         if (this.AwsLoginShellCommand) {
+            if (this.IsAutoLoginPaused) {
+                this.GetCredentials();
+                return;
+            }
             const terminal = vscode.window.createTerminal("Aws Login");
             terminal.show();
             terminal.sendText(this.AwsLoginShellCommand + "; echo 'Terminal Will Close In 5 Secs'; sleep 5; exit");
@@ -211,6 +216,9 @@ class StatusBarItem {
             ui.showWarningMessage("Set a Aws Login Shell Command To Run");
             StatusBarItem.OpenCommandPalette();
         }
+    }
+    PauseAutoLogin() {
+        this.IsAutoLoginPaused = !this.IsAutoLoginPaused;
     }
     onDidCloseTerminal(terminal) {
         if (terminal.name === "Aws Login") {
@@ -254,9 +262,14 @@ class StatusBarItem {
             else {
                 StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile;
                 StatusBarItem.Current.Text = "$(cloud) Expire In " + StatusBarItem.Current.ExpireTime;
+                if (StatusBarItem.Current.IsAutoLoginPaused) {
+                    StatusBarItem.Current.ToolTip += "\nAuto Login Paused";
+                    StatusBarItem.Current.Text += "(P)";
+                }
                 if (StatusBarItem.Current.ExpirationDateString && !StatusBarItem.Current.IsAwsLoginCommandExecuted) {
                     let expireDate = new Date(StatusBarItem.Current.ExpirationDateString);
                     let now = new Date();
+                    StatusBarItem.Current.ToolTip += "\nExpire Time:" + expireDate.toLocaleTimeString();
                     if (ui.getSeconds(now, expireDate) === 0 && StatusBarItem.Current.AwsLoginShellCommand) {
                         StatusBarItem.Current.RunLoginCommand();
                         StatusBarItem.Current.IsAwsLoginCommandExecuted = true;

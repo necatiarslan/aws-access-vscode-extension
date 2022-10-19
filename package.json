@@ -2,7 +2,7 @@
   "name": "aws-access-vscode-extension",
   "displayName": "Aws Access",
   "description": "Monitor your Aws Access Credentials, CountDown to Expiration Time and Auto Refresh Credentials",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publisher": "NecatiARSLAN",
   "repository": {
     "type": "git",
@@ -36,6 +36,10 @@
       {
         "command": "aws-access-vscode-extension.RunLoginCommand",
         "title": "Aws Access:Run Login Command"
+      },
+      {
+        "command": "aws-access-vscode-extension.PauseAutoLogin",
+        "title": "Aws Access:Pause/UnPause Auto Login"
       },
       {
         "command": "aws-access-vscode-extension.SetActiveProfile",
