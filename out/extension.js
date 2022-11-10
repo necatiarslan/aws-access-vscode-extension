@@ -7,7 +7,7 @@ const StatusBar = require("./statusBarItem");
 function activate(context) {
     ui.logToOutput('Aws Access is now active!');
     new StatusBar.StatusBarItem(context);
-    vscode.commands.registerCommand('aws-access-vscode-extension.CheckAwsCredentials', () => {
+    vscode.commands.registerCommand('aws-access-vscode-extension.RefreshCredentials', () => {
         StatusBar.StatusBarItem.Current.GetCredentials();
     });
     vscode.commands.registerCommand('aws-access-vscode-extension.SetAwsLoginCommand', () => {

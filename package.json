@@ -22,8 +22,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "aws-access-vscode-extension.CheckAwsCredentials",
-        "title": "Aws Access:Check Credentials"
+        "command": "aws-access-vscode-extension.RefreshCredentials",
+        "title": "Aws Access:Refresh Credentials"
       },
       {
         "command": "aws-access-vscode-extension.SetAwsLoginCommand",

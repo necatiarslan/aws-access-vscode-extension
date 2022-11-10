@@ -8,7 +8,7 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	new StatusBar.StatusBarItem(context);
 	
-	vscode.commands.registerCommand('aws-access-vscode-extension.CheckAwsCredentials', () => {
+	vscode.commands.registerCommand('aws-access-vscode-extension.RefreshCredentials', () => {
 		StatusBar.StatusBarItem.Current.GetCredentials();
 	});
 
