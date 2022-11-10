@@ -358,9 +358,11 @@ export class StatusBarItem {
     {
         if(StatusBarItem.Current.HasExpiration)
         {
-            if(StatusBarItem.Current.IsExpired)
-            {   
+            if(StatusBarItem.Current.ExpirationDateString && StatusBarItem.Current.IsExpired)
+            {
+                let expireDate = new Date(StatusBarItem.Current.ExpirationDateString);   
                 StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile + " Expired !!!";
+                StatusBarItem.Current.ToolTip += "\nExpire Time:" + expireDate.toLocaleDateString() + " - " + expireDate.toLocaleTimeString();
                 StatusBarItem.Current.Text = "$(cloud) Expired";
 
                 StatusBarItem.Current.StopTimer();
@@ -382,7 +384,7 @@ export class StatusBarItem {
                     let expireDate = new Date(StatusBarItem.Current.ExpirationDateString);
                     let now = new Date();
 
-                    StatusBarItem.Current.ToolTip += "\nExpire Time:" + expireDate.toLocaleTimeString();
+                    StatusBarItem.Current.ToolTip += "\nExpire Time:" + expireDate.toLocaleDateString() + " - " + expireDate.toLocaleTimeString();
 
                     if(ui.getSeconds(now, expireDate) === 0 && StatusBarItem.Current.AwsLoginShellCommand)
                     {
