@@ -2,8 +2,8 @@
 import * as vscode from 'vscode';
 import * as api from './api';
 import * as ui from './ui';
-import { Credentials, ParsedIniData } from "@aws-sdk/types";
-import { existsSync, statSync } from 'fs';
+import { ParsedIniData } from "@aws-sdk/types";
+import { existsSync } from 'fs';
 
 export class StatusBarItem {
 
