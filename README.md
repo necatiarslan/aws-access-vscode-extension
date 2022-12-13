@@ -39,7 +39,7 @@ For more detail on aws credentials
 https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 
 ## TODO:
-- Aws Login Command from File
+- Aws Login for every account
 - Test Aws Credentials
-- When Aws Login Command Fails, vscode shows warning message the terminal process "/bin/zsh '-l'" terminated with exit code:1
-
+- Use native sdk, remove custom codes ?
+- Auto refresh credentials 1 min after expired, in case credentials renewed manually or in another vscode
