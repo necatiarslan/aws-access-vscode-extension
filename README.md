@@ -1,8 +1,8 @@
 # Aws Access 
 ![screenshoot](./media/MainScreen.png)
-Helps you to manage your local AWS Access Credentials.\
-Apps use this credentials to access AWS resources.\
-This extension especially developed to monitor Aws Access Tokens which has a Expire Time and run a Aws Login Command to renew this token. You can see a countdown next to cloud icon.
+This extension helps you manage your local AWS access credentials, which apps use to access AWS resources.\
+It is specifically designed to monitor AWS access tokens that have an expiration time and run an AWS login command to renew the token.\
+You can see a countdown next to the cloud icon.
 
 ## Shared credentials and config ini files
 Aws access credentials lives in the files below
@@ -39,7 +39,6 @@ For more detail on aws credentials
 https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 
 ## TODO:
-- Aws Login for every account
 - Test Aws Credentials
 - Use native sdk, remove custom codes ?
 - Auto refresh credentials 1 min after expired, in case credentials renewed manually or in another vscode

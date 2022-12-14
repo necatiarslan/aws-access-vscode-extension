@@ -4,6 +4,7 @@ import * as api from './api';
 import * as ui from './ui';
 import { ParsedIniData } from "@aws-sdk/types";
 import { existsSync } from 'fs';
+import { profile } from 'console';
 
 export class StatusBarItem {
 
@@ -18,6 +19,7 @@ export class StatusBarItem {
     public ActiveProfile:string = "default";
     public IniData:ParsedIniData | undefined;
     public AwsLoginShellCommand:string | undefined;
+    public AwsLoginShellCommandList:{[key:string]:string|undefined;} = {};
     public Timer: NodeJS.Timer | undefined;
 
     public IsAwsLoginCommandExecuted:boolean = false;
@@ -205,24 +207,30 @@ export class StatusBarItem {
  
     }
 
-    public SetAwsLoginCommand(){
+    public async SetAwsLoginCommand(){
         ui.logToOutput('StatusBarItem.SetAwsLoginCommand Started');
         
-        let thenableResult = vscode.window.showInputBox({ placeHolder: 'Aws Login Shell Command' });
-		thenableResult.then((value)=>{
-            if(value && value.length >= 3)
+        let shellCommand = await vscode.window.showInputBox({ placeHolder: 'Aws Login Shell Command' });
+        if(shellCommand)
+        {
+            if(shellCommand.length>0)
             {
-                if(value.length>0)
-                {
-                    this.AwsLoginShellCommand = value;
-                }
-                else
-                {
-                    this.AwsLoginShellCommand = undefined;
-                }
-                this.SaveState();
+                this.AwsLoginShellCommand = shellCommand;
+                this.AwsLoginShellCommandList[this.ActiveProfile] = shellCommand;
             }
-        });
+            else
+            {
+                this.AwsLoginShellCommand = undefined;
+                this.AwsLoginShellCommandList[this.ActiveProfile] = undefined;
+            }
+            this.SaveState();
+        }
+    }
+
+    public GetAwsLoginCommand(profile:string):string|undefined
+    {
+        var result = this.AwsLoginShellCommandList[profile];
+        return result;
     }
 
     public SetActiveProfile(){
@@ -233,6 +241,7 @@ export class StatusBarItem {
             selected.then(value=>{
                 if(value){
                     this.ActiveProfile = value;
+                    this.AwsLoginShellCommand = this.GetAwsLoginCommand(this.ActiveProfile);
                     this.ShowLoading();
                     this.GetCredentials();
                     this.SaveState();
@@ -286,6 +295,8 @@ export class StatusBarItem {
         {
             ui.showWarningMessage("No Profiles Found !!!");
         }
+        ui.showOutputMessage("AwsLoginShellCommands: ", "", false);
+        ui.showOutputMessage(this.AwsLoginShellCommandList, "", false);
     }
 
     public RunLoginCommand(){
@@ -416,6 +427,7 @@ export class StatusBarItem {
 		try {
 			this.context.globalState.update('ActiveProfile', this.ActiveProfile);
             this.context.globalState.update('AwsLoginShellCommand', this.AwsLoginShellCommand);
+            this.context.globalState.update('AwsLoginShellCommandList', this.AwsLoginShellCommandList);
 
 		} catch (error) {
 			ui.logToOutput("StatusBarItem.SaveState Error !!!");
@@ -430,6 +442,9 @@ export class StatusBarItem {
 
             let AwsLoginShellCommandTemp:string | undefined  = this.context.globalState.get('AwsLoginShellCommand');
 			if (AwsLoginShellCommandTemp) { this.AwsLoginShellCommand = AwsLoginShellCommandTemp; }
+
+            let AwsLoginShellCommandListTemp:{[key:string]:string|undefined;} | undefined  = this.context.globalState.get('AwsLoginShellCommandList');
+			if (AwsLoginShellCommandListTemp) { this.AwsLoginShellCommandList = AwsLoginShellCommandListTemp; }
 
 		} catch (error) {
 			ui.logToOutput("dagTreeView.LoadState Error !!!");
