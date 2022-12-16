@@ -76,6 +76,17 @@ class StatusBarItem {
             ui.showWarningMessage("Config File NOT Found");
         }
     }
+    async TestAwsConnectivity() {
+        if (this.HasCredentials) {
+            let canConnect = await api.testAwsConnectivity(this.ActiveProfile);
+            if (canConnect) {
+                ui.showInfoMessage("Successfully Connect to AWS with User " + this.ActiveProfile);
+            }
+        }
+        else {
+            ui.showWarningMessage("Config File NOT Found");
+        }
+    }
     get ExpirationDateString() {
         let result;
         if (this.IniData) {

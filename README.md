@@ -1,11 +1,28 @@
 # Aws Access 
 ![screenshoot](./media/MainScreen.png)
-This extension helps you manage your local AWS access credentials, which apps use to access AWS resources.\
-It is specifically designed to monitor AWS access tokens that have an expiration time and run an AWS login command to renew the token.\
-You can see a countdown next to the cloud icon.
+
+Manage your local AWS access credentials with ease! \
+This powerful VSCode extension is designed to help you test, renew, and monitor your AWS access tokens. \
+With a variety of features and a sleek, intuitive UI, you'll have all the tools you need to manage your credentials with ease.
+
+Here are some features
+- Monitor your AWS credentials status with a status bar item that updates in real-time
+- Test your credentials to ensure they are valid and up-to-date
+- Set your custom renewal bash script to automate the renewal process
+- Open your local credentials and config files with a single click
+- View a list of your profiles and access key and secret for each one
+
+Say goodbye to manual credential management and focus on what matters most - your code! \
+Try our extension now and experience the convenience of automatic credential renewal.
+
+## Aws Credentials Setup
+To Access Aws, you need to configure aws credentials.
+For more detail on aws credentials \
+https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html \
+https://www.youtube.com/watch?v=SON8sY1iOBU
 
 ## Shared credentials and config ini files
-Aws access credentials lives in the files below
+Aws access credentials lives in the files below \
     - On Linux, Unix, and macOS: ~/.aws/credentials
     - On Windows: C:\Users\USER_NAME\.aws\credentials
 
@@ -25,20 +42,13 @@ If you do not set a profile while calling an AWS resource through the AWS API, a
 To report your bugs or request new features, use link below\
 https://github.com/necatiarslan/aws-access-vscode-extension/issues/new
 
-## Credentials Search Order (Not Supported Yet)
-The extension will attempt to find credentials from the following sources (listed in order of precedence):
-- Environment variables exposed via process.env
-- SSO credentials from token cache
-- Web identity token credentials
-- Shared credentials and config ini files
-    - The shared credentials file on Linux, Unix, and macOS: ~/.aws/credentials
-    - The shared credentials file on Windows: C:\Users\USER_NAME\.aws\credentials
-- The EC2/ECS Instance Metadata Service
 
 For more detail on aws credentials
 https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 
 ## TODO:
-- Test Aws Credentials
-- Use native sdk, remove custom codes ?
-- Auto refresh credentials 1 min after expired, in case credentials renewed manually or in another vscode
+- Use native sdk, remove custom codes if possible
+
+Thanks, \
+Necati ARSLAN \
+necatia@gmail.com

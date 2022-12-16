@@ -1,3 +1,5 @@
+# v1.0.6
+    - Test Aws Connectivity
 # v1.0.5
     - Aws Login shell commands for different profiles
     - New Icon

@@ -113,6 +113,22 @@ export class StatusBarItem {
         }
     }
 
+    public async TestAwsConnectivity()
+    {
+        if(this.HasCredentials)
+        {
+            let canConnect = await api.testAwsConnectivity(this.ActiveProfile);
+            if (canConnect)
+            {
+                ui.showInfoMessage("Successfully Connect to AWS with User " + this.ActiveProfile);
+            }
+        }
+        else
+        {
+            ui.showWarningMessage("Config File NOT Found");
+        }
+    }
+
     public get ExpirationDateString():string | undefined
     {
         let result:string | undefined;
