@@ -1,3 +1,5 @@
+# v1.0.7
+    - New Logo
 # v1.0.6
     - Test Aws Connectivity
 # v1.0.5
