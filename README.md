@@ -48,8 +48,7 @@ https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 
 ## TODO:
 - Use native sdk, remove custom codes if possible
-- Add renew button if credetials expired and command exists
-- Add set active profile button if there is more then 1 profile
+- Update default credentials after a credentials refresh
 
 Thanks, \
 Necati ARSLAN \
