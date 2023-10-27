@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.testAwsConnectivity = exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = void 0;
+exports.updateCredential = exports.setCredentials = exports.testAwsConnectivity = exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = void 0;
 const os_1 = require("os");
 const path_1 = require("path");
 const path_2 = require("path");
@@ -50,4 +50,52 @@ async function testAwsConnectivity(profile) {
     }
 }
 exports.testAwsConnectivity = testAwsConnectivity;
+async function setCredentials(profileName, accessKeyId, secretAccessKey, sessionToken, securityToken, tokenExpiraion) {
+    const fs = require('fs');
+    const os = require('os');
+    const path = require('path');
+    const credentialsFilePath = path.join(os.homedir(), '.aws', 'credentials');
+    var fileContent = fs.readFileSync(credentialsFilePath, 'utf8');
+    //const lines = fileContent.split('\n');
+    if (accessKeyId) {
+        fileContent = updateCredential(fileContent, profileName, "aws_access_key_id", accessKeyId);
+    }
+    if (secretAccessKey) {
+        fileContent = updateCredential(fileContent, profileName, "aws_secret_access_key", secretAccessKey);
+    }
+    if (sessionToken) {
+        fileContent = updateCredential(fileContent, profileName, "aws_session_token", sessionToken);
+    }
+    if (securityToken) {
+        fileContent = updateCredential(fileContent, profileName, "aws_security_token", securityToken);
+    }
+    if (tokenExpiraion) {
+        fileContent = updateCredential(fileContent, profileName, "token_expiration", tokenExpiraion);
+    }
+    fs.writeFileSync(credentialsFilePath, fileContent, 'utf8');
+}
+exports.setCredentials = setCredentials;
+function updateCredential(credentialText, profileName, credentialName, newCredentialValue) {
+    const lines = credentialText.split('\n');
+    var profileFound = false;
+    var lineFound = false;
+    // Loop through each line
+    for (let i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        if (profileFound && line.startsWith("[")) {
+            //another profile
+            break;
+        }
+        if (line === "[" + profileName + "]") {
+            profileFound = true;
+        }
+        if (profileFound && line.startsWith(credentialName)) {
+            var credential = line.split("=")[1].trim();
+            lines[i] = credentialName + " = " + newCredentialValue;
+            lineFound = true;
+        }
+    }
+    return lines.join('\n');
+}
+exports.updateCredential = updateCredential;
 //# sourceMappingURL=api.js.map

@@ -11,6 +11,8 @@ Here are some features
 - Set your custom renewal bash script to automate the renewal process
 - Open your local credentials and config files with a single click
 - View a list of your profiles and access key and secret for each one
+- Copy New Credentials to default profile
+- Do not renew credentials if this Vscode has not renewed them
 
 Say goodbye to manual credential management and focus on what matters most - your code! \
 Try our extension now and experience the convenience of automatic credential renewal.

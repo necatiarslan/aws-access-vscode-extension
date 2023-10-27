@@ -52,6 +52,10 @@ export function activate(context: vscode.ExtensionContext) {
 		StatusBar.StatusBarItem.Current.TestAwsConnectivity();
 	});
 
+	vscode.commands.registerCommand('aws-access-vscode-extension.CopyCredentialsToDefaultProfile', () => {
+		StatusBar.StatusBarItem.Current.CopyCredentialsToDefaultProfile();
+	});
+
 	vscode.window.onDidCloseTerminal((terminal) => {
 			StatusBar.StatusBarItem.Current.onDidCloseTerminal(terminal);
 	});

@@ -1,3 +1,6 @@
+# v1.2.0
+    - Copy new credentials to default profile
+    - Do not renew the credentials if this vscode has not renewed them
 # v1.0.7
     - New Logo
 # v1.0.6

@@ -25,6 +25,8 @@ export class StatusBarItem {
 
     public IsAwsLoginCommandExecuted:boolean = false;
     public IsAutoLoginPaused:boolean = false;
+    public IsMeWhoRefreshedTheCredentials:boolean = false;
+    public IsCopyCredentialsToDefaultProfile:boolean = false;
 
 
 	constructor(context: vscode.ExtensionContext) {
@@ -139,6 +141,12 @@ export class StatusBarItem {
         }
     }
 
+    public async CopyCredentialsToDefaultProfile(){
+        this.IsCopyCredentialsToDefaultProfile = !this.IsCopyCredentialsToDefaultProfile;
+        this.RefreshText();
+        this.SaveState();
+    }
+
     public get ExpirationDateString():string | undefined
     {
         let result:string | undefined;
@@ -231,6 +239,36 @@ export class StatusBarItem {
         });
 
  
+    }
+
+    public SetDefaultCredentials(){
+        if(!this.IsCopyCredentialsToDefaultProfile)
+        {
+            return;
+        }
+
+        ui.logToOutput('StatusBarItem.SetDefaultCredentials Started');
+        
+        //active profile is default so no need to update
+        if (this.ActiveProfile === "default")
+        {
+            return;
+        }
+
+        if(this.IniData)
+        {
+            if(this.IniData[this.ActiveProfile] && this.IniData["default"])
+            {
+                var aws_access_key_id = this.IniData[this.ActiveProfile]["aws_access_key_id"];
+                var aws_secret_access_key = this.IniData[this.ActiveProfile]["aws_secret_access_key"];
+                var aws_session_token = this.IniData[this.ActiveProfile]["aws_session_token"];
+                var aws_security_token = this.IniData[this.ActiveProfile]["aws_security_token"];
+                var token_expiration = this.IniData[this.ActiveProfile]["token_expiration"]; 
+                
+                api.setCredentials('default', aws_access_key_id, aws_secret_access_key, aws_session_token, aws_security_token, token_expiration);
+            }            
+        }
+
     }
 
     public async SetAwsLoginCommand(){
@@ -356,7 +394,9 @@ export class StatusBarItem {
         if(terminal.name === "Aws Login")
         {
             ui.logToOutput('StatusBarItem.onDidCloseTerminal Started');
+            this.IsMeWhoRefreshedTheCredentials = true;
             this.GetCredentials();
+            this.SetDefaultCredentials();
         }
     }
 
@@ -383,7 +423,6 @@ export class StatusBarItem {
                 this.awsExtraStatusBarItem.tooltip = "Refresh Aws Token";
                 this.awsExtraStatusBarItem.show();
             }
-            
         }
         else if(this.HasExpiration && !this.IsExpired)
         {
@@ -407,6 +446,13 @@ export class StatusBarItem {
                 this.awsExtraStatusBarItem.show();
             }
         }
+
+        if(this.IsCopyCredentialsToDefaultProfile)
+        {
+            this.ToolTip += "\nNew Credentials will be copied to default profile";
+            //this.Text += " (C)";
+        }
+
         this.awsAccessStatusBarItem.tooltip = this.ToolTip;
         this.awsAccessStatusBarItem.text = this.Text;
     }
@@ -456,8 +502,16 @@ export class StatusBarItem {
 
                     if(ui.getSeconds(now, expireDate) === 0 && StatusBarItem.Current.AwsLoginShellCommand)
                     {
-                        StatusBarItem.Current.RunLoginCommand();
-                        StatusBarItem.Current.IsAwsLoginCommandExecuted = true;
+                        if(StatusBarItem.Current.IsMeWhoRefreshedTheCredentials === true)
+                        {
+                            StatusBarItem.Current.RunLoginCommand();
+                            StatusBarItem.Current.IsAwsLoginCommandExecuted = true;
+                        }
+                        else
+                        {
+                            StatusBarItem.Current.GetCredentials();
+                        }
+                        
                     }
                 }
 
@@ -471,6 +525,12 @@ export class StatusBarItem {
                 {
                     StatusBarItem.Current.awsExtraStatusBarItem.hide();
                 }
+            }
+
+            if(StatusBarItem.Current.IsCopyCredentialsToDefaultProfile)
+            {
+                StatusBarItem.Current.ToolTip += "\nNew Credentials will be copied to default profile";
+                //StatusBarItem.Current.Text += " (C)";
             }
 
             StatusBarItem.Current.awsAccessStatusBarItem.tooltip = StatusBarItem.Current.ToolTip;
@@ -512,7 +572,7 @@ export class StatusBarItem {
 			this.context.globalState.update('ActiveProfile', this.ActiveProfile);
             this.context.globalState.update('AwsLoginShellCommand', this.AwsLoginShellCommand);
             this.context.globalState.update('AwsLoginShellCommandList', this.AwsLoginShellCommandList);
-
+            this.context.globalState.update('IsCopyCredentialsToDefaultProfile', this.IsCopyCredentialsToDefaultProfile);
 		} catch (error) {
 			ui.logToOutput("StatusBarItem.SaveState Error !!!");
 		}
@@ -529,6 +589,9 @@ export class StatusBarItem {
 
             let AwsLoginShellCommandListTemp:{[key:string]:string|undefined;} | undefined  = this.context.globalState.get('AwsLoginShellCommandList');
 			if (AwsLoginShellCommandListTemp) { this.AwsLoginShellCommandList = AwsLoginShellCommandListTemp; }
+
+            let IsCopyCredentialsToDefaultProfileTemp:boolean|undefined = this.context.globalState.get('IsCopyCredentialsToDefaultProfile');
+			if (IsCopyCredentialsToDefaultProfileTemp) { this.IsCopyCredentialsToDefaultProfile = IsCopyCredentialsToDefaultProfileTemp; }
 
 		} catch (error) {
 			ui.logToOutput("dagTreeView.LoadState Error !!!");

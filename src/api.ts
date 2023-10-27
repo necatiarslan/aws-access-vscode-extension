@@ -55,3 +55,53 @@ export async function testAwsConnectivity(profile:string): Promise<boolean> {
     return false;
   }
 }
+
+export async function setCredentials(profileName:string, accessKeyId:string|undefined, secretAccessKey:string|undefined, sessionToken:string|undefined, securityToken:string|undefined, tokenExpiraion:string|undefined){
+
+  const fs = require('fs');
+  const os = require('os');
+  const path = require('path');
+
+  const credentialsFilePath = path.join(os.homedir(), '.aws', 'credentials');
+
+  var fileContent = fs.readFileSync(credentialsFilePath, 'utf8');
+
+  //const lines = fileContent.split('\n');
+
+  if(accessKeyId){ fileContent = updateCredential(fileContent, profileName, "aws_access_key_id", accessKeyId); }
+  if(secretAccessKey){ fileContent = updateCredential(fileContent, profileName, "aws_secret_access_key", secretAccessKey); }
+  if(sessionToken){ fileContent = updateCredential(fileContent, profileName, "aws_session_token", sessionToken); }
+  if(securityToken){ fileContent = updateCredential(fileContent, profileName, "aws_security_token", securityToken); }
+  if(tokenExpiraion){ fileContent = updateCredential(fileContent, profileName, "token_expiration", tokenExpiraion); }
+  
+  fs.writeFileSync(credentialsFilePath, fileContent, 'utf8');
+}
+
+export function updateCredential(credentialText:string, profileName:string, credentialName:string, newCredentialValue:string){
+  const lines = credentialText.split('\n');
+
+  var profileFound = false;
+  var lineFound = false;
+  // Loop through each line
+  for (let i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    if(profileFound && line.startsWith("["))
+    {
+      //another profile
+      break;
+    }
+    
+    if (line === "[" + profileName + "]")
+    {
+      profileFound = true;
+    }
+    if (profileFound && line.startsWith(credentialName))
+    {
+      var credential = line.split("=")[1].trim();
+      lines[i] = credentialName + " = " + newCredentialValue;
+      lineFound = true;
+    }
+  }
+
+  return lines.join('\n');
+}
