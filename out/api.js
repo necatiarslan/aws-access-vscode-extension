@@ -52,11 +52,8 @@ async function testAwsConnectivity(profile) {
 exports.testAwsConnectivity = testAwsConnectivity;
 async function setCredentials(profileName, accessKeyId, secretAccessKey, sessionToken, securityToken, tokenExpiraion) {
     const fs = require('fs');
-    const os = require('os');
-    const path = require('path');
-    const credentialsFilePath = path.join(os.homedir(), '.aws', 'credentials');
+    const credentialsFilePath = (0, exports.getCredentialsFilepath)();
     var fileContent = fs.readFileSync(credentialsFilePath, 'utf8');
-    //const lines = fileContent.split('\n');
     if (accessKeyId) {
         fileContent = updateCredential(fileContent, profileName, "aws_access_key_id", accessKeyId);
     }

@@ -2,7 +2,7 @@
   "name": "aws-access-vscode-extension",
   "displayName": "Aws Access",
   "description": "Monitor your Aws Access Credentials, Expiration Time and Auto Refresh Token",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "publisher": "NecatiARSLAN",
   "repository": {
     "type": "git",

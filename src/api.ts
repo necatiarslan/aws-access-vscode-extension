@@ -59,14 +59,8 @@ export async function testAwsConnectivity(profile:string): Promise<boolean> {
 export async function setCredentials(profileName:string, accessKeyId:string|undefined, secretAccessKey:string|undefined, sessionToken:string|undefined, securityToken:string|undefined, tokenExpiraion:string|undefined){
 
   const fs = require('fs');
-  const os = require('os');
-  const path = require('path');
-
-  const credentialsFilePath = path.join(os.homedir(), '.aws', 'credentials');
-
+  const credentialsFilePath = getCredentialsFilepath();
   var fileContent = fs.readFileSync(credentialsFilePath, 'utf8');
-
-  //const lines = fileContent.split('\n');
 
   if(accessKeyId){ fileContent = updateCredential(fileContent, profileName, "aws_access_key_id", accessKeyId); }
   if(secretAccessKey){ fileContent = updateCredential(fileContent, profileName, "aws_secret_access_key", secretAccessKey); }

@@ -155,8 +155,9 @@ class StatusBarItem {
             if (this.HasExpiration) {
                 this.StartTimer();
             }
+            this.SetDefaultCredentials();
         }).catch((error) => {
-            ui.logToOutput('StatusBarItem.GetCredentials IniData NOT Found ' + error);
+            ui.logToOutput('StatusBarItem.GetCredentials Error ' + error);
         }).finally(() => {
             this.RefreshText();
         });
@@ -172,14 +173,23 @@ class StatusBarItem {
         }
         if (this.IniData) {
             if (this.IniData[this.ActiveProfile] && this.IniData["default"]) {
-                var aws_access_key_id = this.IniData[this.ActiveProfile]["aws_access_key_id"];
-                var aws_secret_access_key = this.IniData[this.ActiveProfile]["aws_secret_access_key"];
-                var aws_session_token = this.IniData[this.ActiveProfile]["aws_session_token"];
-                var aws_security_token = this.IniData[this.ActiveProfile]["aws_security_token"];
-                var token_expiration = this.IniData[this.ActiveProfile]["token_expiration"];
+                var aws_access_key_id = this.GetCredentialValue(this.ActiveProfile, "aws_access_key_id");
+                var aws_secret_access_key = this.GetCredentialValue(this.ActiveProfile, "aws_secret_access_key");
+                var aws_session_token = this.GetCredentialValue(this.ActiveProfile, "aws_session_token");
+                var aws_security_token = this.GetCredentialValue(this.ActiveProfile, "aws_security_token");
+                var token_expiration = this.GetCredentialValue(this.ActiveProfile, "token_expiration");
                 api.setCredentials('default', aws_access_key_id, aws_secret_access_key, aws_session_token, aws_security_token, token_expiration);
+                ui.logToOutput('StatusBarItem.SetDefaultCredentials Credentials copied to defauld profile');
             }
         }
+    }
+    GetCredentialValue(profileName, credentialName) {
+        if (this.IniData) {
+            if (this.IniData[profileName] && this.IniData[profileName][credentialName]) {
+                return this.IniData[profileName][credentialName];
+            }
+        }
+        return undefined;
     }
     async SetAwsLoginCommand() {
         ui.logToOutput('StatusBarItem.SetAwsLoginCommand Started');
@@ -276,7 +286,6 @@ class StatusBarItem {
             ui.logToOutput('StatusBarItem.onDidCloseTerminal Started');
             this.IsMeWhoRefreshedTheCredentials = true;
             this.GetCredentials();
-            this.SetDefaultCredentials();
         }
     }
     ShowLoading() {
