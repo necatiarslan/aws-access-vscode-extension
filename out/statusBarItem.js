@@ -266,7 +266,7 @@ class StatusBarItem {
         ui.logToOutput('StatusBarItem.AutoCallLoginCommand Started');
         if (this.AwsLoginShellCommand) {
             if (this.IsAutoLoginPaused) {
-                this.GetCredentials();
+                setTimeout(this.GetCredentials, 60000);
                 return;
             }
             const terminal = vscode.window.createTerminal("Aws Login");
@@ -330,6 +330,10 @@ class StatusBarItem {
             this.ToolTip += "\nNew Credentials will be copied to default profile";
             //this.Text += " (C)";
         }
+        if (this.HasExpiration && !this.IsMeWhoRefreshedTheCredentials) {
+            this.ToolTip += "\nI will not renew credentials automatically";
+            //this.Text += " (C)";
+        }
         this.awsAccessStatusBarItem.tooltip = this.ToolTip;
         this.awsAccessStatusBarItem.text = this.Text;
     }
@@ -368,7 +372,7 @@ class StatusBarItem {
                             StatusBarItem.Current.IsAwsLoginCommandExecuted = true;
                         }
                         else {
-                            StatusBarItem.Current.GetCredentials();
+                            setTimeout(StatusBarItem.Current.GetCredentials, 60000);
                         }
                     }
                 }
@@ -384,6 +388,10 @@ class StatusBarItem {
             if (StatusBarItem.Current.IsCopyCredentialsToDefaultProfile) {
                 StatusBarItem.Current.ToolTip += "\nNew Credentials will be copied to default profile";
                 //StatusBarItem.Current.Text += " (C)";
+            }
+            if (StatusBarItem.Current.HasExpiration && !StatusBarItem.Current.IsMeWhoRefreshedTheCredentials) {
+                StatusBarItem.Current.ToolTip += "\nI will not renew credentials automatically";
+                //this.Text += " (C)";
             }
             StatusBarItem.Current.awsAccessStatusBarItem.tooltip = StatusBarItem.Current.ToolTip;
             StatusBarItem.Current.awsAccessStatusBarItem.text = StatusBarItem.Current.Text;

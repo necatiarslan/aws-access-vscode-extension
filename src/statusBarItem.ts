@@ -384,7 +384,7 @@ export class StatusBarItem {
         {
             if(this.IsAutoLoginPaused)
             {
-                this.GetCredentials();
+                setTimeout(this.GetCredentials, 60000);
                 return;
             }
 
@@ -466,6 +466,12 @@ export class StatusBarItem {
             //this.Text += " (C)";
         }
 
+        if(this.HasExpiration && !this.IsMeWhoRefreshedTheCredentials)
+        {
+            this.ToolTip += "\nI will not renew credentials automatically";
+            //this.Text += " (C)";
+        }
+
         this.awsAccessStatusBarItem.tooltip = this.ToolTip;
         this.awsAccessStatusBarItem.text = this.Text;
     }
@@ -522,7 +528,7 @@ export class StatusBarItem {
                         }
                         else
                         {
-                            StatusBarItem.Current.GetCredentials();
+                            setTimeout(StatusBarItem.Current.GetCredentials, 60000);
                         }
                         
                     }
@@ -544,6 +550,12 @@ export class StatusBarItem {
             {
                 StatusBarItem.Current.ToolTip += "\nNew Credentials will be copied to default profile";
                 //StatusBarItem.Current.Text += " (C)";
+            }
+
+            if(StatusBarItem.Current.HasExpiration && !StatusBarItem.Current.IsMeWhoRefreshedTheCredentials)
+            {
+                StatusBarItem.Current.ToolTip += "\nI will not renew credentials automatically";
+                //this.Text += " (C)";
             }
 
             StatusBarItem.Current.awsAccessStatusBarItem.tooltip = StatusBarItem.Current.ToolTip;
