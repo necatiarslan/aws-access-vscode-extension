@@ -405,9 +405,9 @@ export class StatusBarItem {
 
     public onDidCloseTerminal(terminal:vscode.Terminal)
     {
-        if(terminal.name === "Aws Login")
+        ui.logToOutput('StatusBarItem.onDidCloseTerminal Started');
+        if(terminal.creationOptions.name === "Aws Login")
         {
-            ui.logToOutput('StatusBarItem.onDidCloseTerminal Started');
             this.IsMeWhoRefreshedTheCredentials = true;
             this.GetCredentials();
         }

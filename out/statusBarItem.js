@@ -282,8 +282,8 @@ class StatusBarItem {
         this.IsAutoLoginPaused = !this.IsAutoLoginPaused;
     }
     onDidCloseTerminal(terminal) {
-        if (terminal.name === "Aws Login") {
-            ui.logToOutput('StatusBarItem.onDidCloseTerminal Started');
+        ui.logToOutput('StatusBarItem.onDidCloseTerminal Started');
+        if (terminal.creationOptions.name === "Aws Login") {
             this.IsMeWhoRefreshedTheCredentials = true;
             this.GetCredentials();
         }
