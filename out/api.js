@@ -1,12 +1,43 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateCredential = exports.setCredentials = exports.testAwsConnectivity = exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = void 0;
+exports.updateCredential = exports.setCredentials = exports.testAwsConnectivity = exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.getCredentialProvider = void 0;
 const os_1 = require("os");
 const path_1 = require("path");
 const path_2 = require("path");
 const parseKnownFiles_1 = require("./aws-sdk/parseKnownFiles");
 const AWS = require("aws-sdk");
 const ui = require("./ui");
+function getCredentialProvider(credentials = undefined) {
+    if (!credentials) {
+        credentials = AWS.config.credentials;
+    }
+    if (!credentials) {
+        return "Credential Not Found";
+    }
+    if (credentials instanceof (AWS.EnvironmentCredentials)) {
+        return "EnvironmentCredentials";
+    }
+    else if (credentials instanceof (AWS.ECSCredentials)) {
+        return "ECSCredentials";
+    }
+    else if (credentials instanceof (AWS.SsoCredentials)) {
+        return "SsoCredentials";
+    }
+    else if (credentials instanceof (AWS.SharedIniFileCredentials)) {
+        return "SharedIniFileCredentials";
+    }
+    else if (credentials instanceof (AWS.ProcessCredentials)) {
+        return "ProcessCredentials";
+    }
+    else if (credentials instanceof (AWS.TokenFileWebIdentityCredentials)) {
+        return "TokenFileWebIdentityCredentials";
+    }
+    else if (credentials instanceof (AWS.EC2MetadataCredentials)) {
+        return "EC2MetadataCredentials";
+    }
+    return "UnknownProvider";
+}
+exports.getCredentialProvider = getCredentialProvider;
 async function getIniProfileData(init = {}) {
     const profiles = await (0, parseKnownFiles_1.parseKnownFiles)(init);
     return profiles;

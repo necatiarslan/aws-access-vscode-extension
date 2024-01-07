@@ -213,13 +213,14 @@ export class StatusBarItem {
         return "";
     }
 
-    public GetCredentials(){
+    public async GetCredentials(){
         ui.logToOutput('StatusBarItem.GetDefaultCredentials Started');
 
-        let profileData = api.getIniProfileData();
-        profileData.then( (value:ParsedIniData) => {
+        let profileData = await api.getIniProfileData();
+        try
+        {
             ui.logToOutput('StatusBarItem.GetCredentials IniData Found');
-            this.IniData = value;
+            this.IniData = profileData;
 
             if(!this.Profiles.includes(this.ActiveProfile) && this.Profiles.length > 0)
             {
@@ -234,11 +235,15 @@ export class StatusBarItem {
 
             this.SetDefaultCredentials();
 
-        }).catch((error) => {
+        }
+        catch(error)
+        {
             ui.logToOutput('StatusBarItem.GetCredentials Error ' + error);
-		}).finally(() => {
+		}
+        finally
+        {
             this.RefreshText();
-        });
+        }
 
  
     }
@@ -460,20 +465,25 @@ export class StatusBarItem {
             }
         }
 
-        if(this.IsCopyCredentialsToDefaultProfile)
-        {
-            this.ToolTip += "\nNew Credentials will be copied to default profile";
-            //this.Text += " (C)";
-        }
-
-        if(this.HasExpiration && !this.IsMeWhoRefreshedTheCredentials)
-        {
-            this.ToolTip += "\nI will not renew credentials automatically";
-            //this.Text += " (C)";
-        }
+        let tooltipLastline = "";
+        tooltipLastline += this.GetBoolChar(this.IsMeWhoRefreshedTheCredentials) + "Renew ";
+        tooltipLastline += this.GetBoolChar(this.IsCopyCredentialsToDefaultProfile) + "Copy ";
+        tooltipLastline += api.getCredentialProvider();
+        this.ToolTip += "\n" + tooltipLastline;
 
         this.awsAccessStatusBarItem.tooltip = this.ToolTip;
         this.awsAccessStatusBarItem.text = this.Text;
+    }
+
+    public GetBoolChar(value:boolean){
+        if(value)
+        {
+            return "✓";
+        }
+        else{
+            return "x";
+        }
+
     }
 
     public static OnTimerTicked()
@@ -546,36 +556,36 @@ export class StatusBarItem {
                 }
             }
 
-            if(StatusBarItem.Current.IsCopyCredentialsToDefaultProfile)
-            {
-                StatusBarItem.Current.ToolTip += "\nNew Credentials will be copied to default profile";
-                //StatusBarItem.Current.Text += " (C)";
-            }
-
-            if(StatusBarItem.Current.HasExpiration && !StatusBarItem.Current.IsMeWhoRefreshedTheCredentials)
-            {
-                StatusBarItem.Current.ToolTip += "\nI will not renew credentials automatically";
-                //this.Text += " (C)";
-            }
+            let tooltipLastline = "";
+            tooltipLastline += StatusBarItem.Current.GetBoolChar(StatusBarItem.Current.IsMeWhoRefreshedTheCredentials) + "Renew ";
+            tooltipLastline += StatusBarItem.Current.GetBoolChar(StatusBarItem.Current.IsCopyCredentialsToDefaultProfile) + "Copy ";
+            tooltipLastline += api.getCredentialProvider();
+            StatusBarItem.Current.ToolTip += "\n" + tooltipLastline;
 
             StatusBarItem.Current.awsAccessStatusBarItem.tooltip = StatusBarItem.Current.ToolTip;
             StatusBarItem.Current.awsAccessStatusBarItem.text = StatusBarItem.Current.Text;
         }
     }
 
-    public static StatusBarClicked()
+    public static async StatusBarClicked()
     {
         ui.logToOutput('StatusBarItem.StatusBarClicked Started');
         StatusBarItem.OpenCommandPalette();
     }
 
-    public static ExtraButtonClicked()
+    public static async ExtraButtonClicked()
     {
         ui.logToOutput('StatusBarItem.ExtraButtonClicked Started');
         
+        
         if(StatusBarItem.Current.HasExpiration && StatusBarItem.Current.IsExpired)
         {
-            StatusBarItem.Current.RunLoginCommand();
+            //the credentials may refreshed in another windows, check again
+            await StatusBarItem.Current.GetCredentials();
+            if (StatusBarItem.Current.HasExpiration && StatusBarItem.Current.IsExpired)
+            {
+                StatusBarItem.Current.RunLoginCommand();
+            }
         }
         else if(StatusBarItem.Current.Profiles.length > 1)
         {
