@@ -1,3 +1,6 @@
+# v1.3.0
+    - Select Profile Button
+    - Auto Refresh issue fixed 
 # v1.2.0
     - Copy new credentials to default profile
     - Do not renew the credentials if this vscode has not renewed them

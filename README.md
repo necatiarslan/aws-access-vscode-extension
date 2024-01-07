@@ -49,9 +49,7 @@ For more detail on aws credentials
 https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 
 ## TODO:
-- Use native sdk, remove custom codes if possible
-- Update default credentials after a credentials refresh
-- Expire Time countdown does not effected by setting the active profile
+- Set up aws credentials
 
 Thanks, \
 Necati ARSLAN \

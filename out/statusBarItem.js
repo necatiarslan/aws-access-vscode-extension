@@ -27,11 +27,16 @@ class StatusBarItem {
         this.awsAccessStatusBarItem.tooltip = this.ToolTip;
         context.subscriptions.push(this.awsAccessStatusBarItem);
         this.awsAccessStatusBarItem.show();
-        const extraButtonClickedCommand = 'aws-access-vscode-extension.extraButtonClicked';
-        context.subscriptions.push(vscode.commands.registerCommand(extraButtonClickedCommand, StatusBarItem.ExtraButtonClicked));
-        this.awsExtraStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
-        this.awsExtraStatusBarItem.command = extraButtonClickedCommand;
-        context.subscriptions.push(this.awsExtraStatusBarItem);
+        const refreshButtonClickedCommand = 'aws-access-vscode-extension.refreshButtonClicked';
+        context.subscriptions.push(vscode.commands.registerCommand(refreshButtonClickedCommand, StatusBarItem.RefreshButtonClicked));
+        this.awsRefreshStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
+        this.awsRefreshStatusBarItem.command = refreshButtonClickedCommand;
+        context.subscriptions.push(this.awsRefreshStatusBarItem);
+        const profileButtonClickedCommand = 'aws-access-vscode-extension.profileButtonClicked';
+        context.subscriptions.push(vscode.commands.registerCommand(profileButtonClickedCommand, StatusBarItem.ProfileButtonClicked));
+        this.awsProfileStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
+        this.awsProfileStatusBarItem.command = profileButtonClickedCommand;
+        context.subscriptions.push(this.awsProfileStatusBarItem);
         this.ShowLoading();
         this.LoadState();
         this.GetCredentials();
@@ -296,7 +301,13 @@ class StatusBarItem {
     }
     RefreshText() {
         ui.logToOutput('StatusBarItem.Refresh Started');
-        this.awsExtraStatusBarItem.hide();
+        this.awsRefreshStatusBarItem.hide();
+        this.awsProfileStatusBarItem.hide();
+        if (this.Profiles && this.Profiles.length > 1) {
+            this.awsProfileStatusBarItem.text = "$(account)";
+            this.awsProfileStatusBarItem.tooltip = "Select Profile";
+            this.awsProfileStatusBarItem.show();
+        }
         if (!this.HasCredentials) {
             this.ToolTip = "No Aws Credentials Found !!!";
             this.Text = "$(cloud) Aws No Credentials";
@@ -305,28 +316,18 @@ class StatusBarItem {
             this.ToolTip = "Profile:" + this.ActiveProfile + " Expired !!!";
             this.Text = "$(cloud) Expired";
             if (this.AwsLoginShellCommand) {
-                this.awsExtraStatusBarItem.text = "$(sync)";
-                this.awsExtraStatusBarItem.tooltip = "Refresh Aws Token";
-                this.awsExtraStatusBarItem.show();
+                this.awsRefreshStatusBarItem.text = "$(sync)";
+                this.awsRefreshStatusBarItem.tooltip = "Refresh Aws Token";
+                this.awsRefreshStatusBarItem.show();
             }
         }
         else if (this.HasExpiration && !this.IsExpired) {
             this.ToolTip = "Profile:" + this.ActiveProfile + " will expire on " + this.ExpirationDateString;
             this.Text = "$(cloud) Expire In " + this.ExpireTime;
-            if (this.Profiles.length > 1) {
-                this.awsExtraStatusBarItem.text = "$(account)";
-                this.awsExtraStatusBarItem.tooltip = "Switch Aws Account";
-                this.awsExtraStatusBarItem.show();
-            }
         }
         else {
             this.ToolTip = "Profile:" + this.ActiveProfile;
             this.Text = "$(cloud) Aws $(check)";
-            if (this.Profiles.length > 1) {
-                this.awsExtraStatusBarItem.text = "$(account)";
-                this.awsExtraStatusBarItem.tooltip = "Switch Aws Account";
-                this.awsExtraStatusBarItem.show();
-            }
         }
         let tooltipLastline = "";
         tooltipLastline += this.GetBoolChar(this.IsMeWhoRefreshedTheCredentials) + "Renew ";
@@ -354,12 +355,12 @@ class StatusBarItem {
                 StatusBarItem.Current.StopTimer();
                 StatusBarItem.Current.IsAwsLoginCommandExecuted = false;
                 if (StatusBarItem.Current.AwsLoginShellCommand) {
-                    StatusBarItem.Current.awsExtraStatusBarItem.text = "$(sync)";
-                    StatusBarItem.Current.awsExtraStatusBarItem.tooltip = "Refresh Aws Token";
-                    StatusBarItem.Current.awsExtraStatusBarItem.show();
+                    StatusBarItem.Current.awsRefreshStatusBarItem.text = "$(sync)";
+                    StatusBarItem.Current.awsRefreshStatusBarItem.tooltip = "Refresh Aws Token";
+                    StatusBarItem.Current.awsRefreshStatusBarItem.show();
                 }
                 else {
-                    StatusBarItem.Current.awsExtraStatusBarItem.hide();
+                    StatusBarItem.Current.awsRefreshStatusBarItem.hide();
                 }
             }
             else {
@@ -383,14 +384,6 @@ class StatusBarItem {
                         }
                     }
                 }
-                if (StatusBarItem.Current.Profiles.length > 1) {
-                    StatusBarItem.Current.awsExtraStatusBarItem.text = "$(account)";
-                    StatusBarItem.Current.awsExtraStatusBarItem.tooltip = "Switch Aws Account";
-                    StatusBarItem.Current.awsExtraStatusBarItem.show();
-                }
-                else {
-                    StatusBarItem.Current.awsExtraStatusBarItem.hide();
-                }
             }
             let tooltipLastline = "";
             tooltipLastline += StatusBarItem.Current.GetBoolChar(StatusBarItem.Current.IsMeWhoRefreshedTheCredentials) + "Renew ";
@@ -405,8 +398,8 @@ class StatusBarItem {
         ui.logToOutput('StatusBarItem.StatusBarClicked Started');
         StatusBarItem.OpenCommandPalette();
     }
-    static async ExtraButtonClicked() {
-        ui.logToOutput('StatusBarItem.ExtraButtonClicked Started');
+    static async RefreshButtonClicked() {
+        ui.logToOutput('StatusBarItem.RefreshButtonClicked Started');
         if (StatusBarItem.Current.HasExpiration && StatusBarItem.Current.IsExpired) {
             //the credentials may refreshed in another windows, check again
             await StatusBarItem.Current.GetCredentials();
@@ -414,7 +407,10 @@ class StatusBarItem {
                 StatusBarItem.Current.RunLoginCommand();
             }
         }
-        else if (StatusBarItem.Current.Profiles.length > 1) {
+    }
+    static async ProfileButtonClicked() {
+        ui.logToOutput('StatusBarItem.ProfileButtonClicked Started');
+        if (StatusBarItem.Current.Profiles.length > 1) {
             StatusBarItem.Current.SetActiveProfile();
         }
     }
