@@ -19,7 +19,7 @@ class StatusBarItem {
         ui.logToOutput('StatusBarItem.constructor Started');
         this.context = context;
         StatusBarItem.Current = this;
-        const statusBarClickedCommand = 'aws-access-vscode-extension.statusBarClicked';
+        const statusBarClickedCommand = 'aws-credentials-vscode-extension.statusBarClicked';
         context.subscriptions.push(vscode.commands.registerCommand(statusBarClickedCommand, StatusBarItem.StatusBarClicked));
         this.awsAccessStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 2);
         this.awsAccessStatusBarItem.command = statusBarClickedCommand;
@@ -27,12 +27,12 @@ class StatusBarItem {
         this.awsAccessStatusBarItem.tooltip = this.ToolTip;
         context.subscriptions.push(this.awsAccessStatusBarItem);
         this.awsAccessStatusBarItem.show();
-        const refreshButtonClickedCommand = 'aws-access-vscode-extension.refreshButtonClicked';
+        const refreshButtonClickedCommand = 'aws-credentials-vscode-extension.refreshButtonClicked';
         context.subscriptions.push(vscode.commands.registerCommand(refreshButtonClickedCommand, StatusBarItem.RefreshButtonClicked));
         this.awsRefreshStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
         this.awsRefreshStatusBarItem.command = refreshButtonClickedCommand;
         context.subscriptions.push(this.awsRefreshStatusBarItem);
-        const profileButtonClickedCommand = 'aws-access-vscode-extension.profileButtonClicked';
+        const profileButtonClickedCommand = 'aws-credentials-vscode-extension.profileButtonClicked';
         context.subscriptions.push(vscode.commands.registerCommand(profileButtonClickedCommand, StatusBarItem.ProfileButtonClicked));
         this.awsProfileStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
         this.awsProfileStatusBarItem.command = profileButtonClickedCommand;
@@ -415,7 +415,7 @@ class StatusBarItem {
         }
     }
     static OpenCommandPalette() {
-        const extensionPrefix = 'Aws Access';
+        const extensionPrefix = 'Aws Credentials';
         vscode.commands.executeCommand('workbench.action.quickOpen', `> ${extensionPrefix}`);
     }
     SaveState() {

@@ -1,14 +1,14 @@
 {
-  "name": "aws-access-vscode-extension",
-  "displayName": "Aws Access",
-  "description": "Monitor your Aws Access Credentials, Expiration Time and Auto Refresh Token",
-  "version": "1.3.0",
+  "name": "aws-credentials-vscode-extension",
+  "displayName": "Aws CLI Credentials",
+  "description": "Setup your local Aws CLI Credentials, Monitor Expiration Time and Auto Refresh Token",
+  "version": "1.0.0",
   "publisher": "NecatiARSLAN",
   "repository": {
     "type": "git",
     "url": "https://github.com/necatiarslan/aws-access-vscode-extension"
   },
-  "icon": "media/aws-access-logo.png",
+  "icon": "media/aws-credentials-logo.png",
   "engines": {
     "vscode": "^1.71.0"
   },
@@ -22,52 +22,52 @@
   "contributes": {
     "commands": [
       {
-        "command": "aws-access-vscode-extension.RefreshCredentials",
-        "title": "Aws Access:Refresh Credentials"
+        "command": "aws-credentials-vscode-extension.RefreshCredentials",
+        "title": "Aws Credentials:Refresh Credentials"
       },
       {
-        "command": "aws-access-vscode-extension.SetAwsLoginCommand",
-        "title": "Aws Access:Set Login Command"
+        "command": "aws-credentials-vscode-extension.SetAwsLoginCommand",
+        "title": "Aws Credentials:Set Login Command"
       },
       {
-        "command": "aws-access-vscode-extension.ListAwsProfiles",
-        "title": "Aws Access:List Profiles"
+        "command": "aws-credentials-vscode-extension.ListAwsProfiles",
+        "title": "Aws Credentials:List Profiles"
       },
       {
-        "command": "aws-access-vscode-extension.RunLoginCommand",
-        "title": "Aws Access:Run Login Command"
+        "command": "aws-credentials-vscode-extension.RunLoginCommand",
+        "title": "Aws Credentials:Run Login Command"
       },
       {
-        "command": "aws-access-vscode-extension.PauseAutoLogin",
-        "title": "Aws Access:Pause/UnPause Auto Login"
+        "command": "aws-credentials-vscode-extension.PauseAutoLogin",
+        "title": "Aws Credentials:Pause/UnPause Auto Login"
       },
       {
-        "command": "aws-access-vscode-extension.SetActiveProfile",
-        "title": "Aws Access:Set Active Profile"
+        "command": "aws-credentials-vscode-extension.SetActiveProfile",
+        "title": "Aws Credentials:Set Active Profile"
       },
       {
-        "command": "aws-access-vscode-extension.ShowActiveCredentials",
-        "title": "Aws Access:Show Active Credentials"
+        "command": "aws-credentials-vscode-extension.ShowActiveCredentials",
+        "title": "Aws Credentials:Show Active Credentials"
       },
       {
-        "command": "aws-access-vscode-extension.ShowDefaultCredentials",
-        "title": "Aws Access:Show Default Credentials"
+        "command": "aws-credentials-vscode-extension.ShowDefaultCredentials",
+        "title": "Aws Credentials:Show Default Credentials"
       },
       {
-        "command": "aws-access-vscode-extension.OpenCredentialsFile",
-        "title": "Aws Access:Open Credentials File"
+        "command": "aws-credentials-vscode-extension.OpenCredentialsFile",
+        "title": "Aws Credentials:Open Credentials File"
       },
       {
-        "command": "aws-access-vscode-extension.OpenConfigFile",
-        "title": "Aws Access:Open Config File"
+        "command": "aws-credentials-vscode-extension.OpenConfigFile",
+        "title": "Aws Credentials:Open Config File"
       },
       {
-        "command": "aws-access-vscode-extension.TestAwsConnectivity",
-        "title": "Aws Access:Test Aws Connectivity With Active User"
+        "command": "aws-credentials-vscode-extension.TestAwsConnectivity",
+        "title": "Aws Credentials:Test Aws Connectivity With Active User"
       },
       {
-        "command": "aws-access-vscode-extension.CopyCredentialsToDefaultProfile",
-        "title": "Aws Access:Copy Credentials To Default Profile"
+        "command": "aws-credentials-vscode-extension.CopyCredentialsToDefaultProfile",
+        "title": "Aws Credentials:Copy Credentials To Default Profile"
       }
     ]
   },

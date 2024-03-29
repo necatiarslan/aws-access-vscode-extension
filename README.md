@@ -1,8 +1,8 @@
-# Aws Access 
+# Aws CLI Credentials 
 ![screenshoot](./media/MainScreen.png)
 
-Manage your local AWS access credentials with ease! \
-This powerful VSCode extension is designed to help you test, renew, and monitor your AWS access tokens. \
+Manage your local Aws Credentials with ease! \
+This powerful VSCode extension is designed to help you test, renew, and monitor your Aws Credentials tokens. \
 With a variety of features and a sleek, intuitive UI, you'll have all the tools you need to manage your credentials with ease.
 
 Here are some features
@@ -24,17 +24,17 @@ https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html \
 https://www.youtube.com/watch?v=SON8sY1iOBU
 
 ## Shared credentials and config ini files
-Aws access credentials lives in the files below \
-    - On Linux, Unix, and macOS: ~/.aws/credentials
-    - On Windows: C:\Users\USER_NAME\.aws\credentials
+Aws credentials lives in the files below
+- On Linux, Unix, and macOS: ~/.aws/credentials
+- On Windows: C:\Users\USER_NAME\\.aws\credentials
 
 ## Profiles
 You could have more then one credentials which is called Profiles.\
 If you do not set a profile while calling an AWS resource through the AWS API, api will use default profile.
 
 ## To use this extension effectively
-- Set the Active Profile you use, to do so Cmd+Shift+P then search Aws Access: Set Active Profile
-- Set Aws Login Command, to do so Cmd+Shift+P then search Aws Access: Set Aws Login Command
+- Set the Active Profile you use, to do so Cmd+Shift+P then search Aws Credentials: Set Active Profile
+- Set Aws Login Command, to do so Cmd+Shift+P then search Aws Credentials: Set Aws Login Command
 
 ## Commands
 ![screenshoot](./media/CommandPalette.png)
