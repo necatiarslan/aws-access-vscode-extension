@@ -50,6 +50,7 @@ https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 
 ## TODO:
 - Set up aws credentials
+- fix when no credentials are found
 
 Thanks, \
 Necati ARSLAN \
