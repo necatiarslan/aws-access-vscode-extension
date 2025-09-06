@@ -80,21 +80,21 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/glob": "^7.2.0",
-    "@types/mocha": "^9.1.1",
-    "@types/node": "^18.19.124",
-    "@types/vscode": "^1.71.0",
-    "@typescript-eslint/eslint-plugin": "^5.30.0",
-    "@typescript-eslint/parser": "^5.30.0",
-    "@vscode/test-electron": "^2.1.5",
-    "eslint": "^8.18.0",
-    "glob": "^8.0.3",
-    "mocha": "^10.0.0",
+    "@types/glob": "^9.0.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.3.1",
+    "@types/vscode": "^1.103.0",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.35.0",
+    "glob": "^11.0.3",
+    "mocha": "^11.7.2",
     "typescript": "^5.9.2"
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch-logs": "^3.883.0",
-    "@aws-sdk/credential-provider-node": "^3.181.0",
+    "@aws-sdk/credential-provider-node": "^3.883.0",
     "@aws-sdk/credential-providers": "^3.883.0",
     "@aws-sdk/types": "^3.862.0"
   }

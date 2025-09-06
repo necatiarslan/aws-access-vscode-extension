@@ -1,6 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateCredential = exports.setCredentials = exports.testAwsConnectivity = exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.getCredentialProviderName = exports.getCredentials = exports.isSharedIniFileCredentials = void 0;
+exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = void 0;
+exports.isSharedIniFileCredentials = isSharedIniFileCredentials;
+exports.getCredentials = getCredentials;
+exports.getCredentialProviderName = getCredentialProviderName;
+exports.getIniProfileData = getIniProfileData;
+exports.testAwsConnectivity = testAwsConnectivity;
+exports.setCredentials = setCredentials;
+exports.updateCredential = updateCredential;
 const os_1 = require("os");
 const path_1 = require("path");
 const path_2 = require("path");
@@ -13,7 +20,6 @@ function isSharedIniFileCredentials(credentials = undefined) {
     // In v3, we check if credentials came from shared ini file differently
     return credentials?.constructor.name === "SharedIniCredentials";
 }
-exports.isSharedIniFileCredentials = isSharedIniFileCredentials;
 async function getCredentials(profileName) {
     let credentials;
     try {
@@ -34,7 +40,6 @@ async function getCredentials(profileName) {
         return credentials;
     }
 }
-exports.getCredentials = getCredentials;
 async function getCredentialProviderName(profileName = undefined) {
     let credentials = await getCredentials(profileName);
     if (!credentials) {
@@ -42,12 +47,10 @@ async function getCredentialProviderName(profileName = undefined) {
     }
     return credentials.constructor.name;
 }
-exports.getCredentialProviderName = getCredentialProviderName;
 async function getIniProfileData(init = {}) {
     const profiles = await (0, parseKnownFiles_1.parseKnownFiles)(init);
     return profiles;
 }
-exports.getIniProfileData = getIniProfileData;
 exports.ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
 const getHomeDir = () => {
     const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;
@@ -86,7 +89,6 @@ async function testAwsConnectivity(profile) {
         return false;
     }
 }
-exports.testAwsConnectivity = testAwsConnectivity;
 async function setCredentials(profileName, accessKeyId, secretAccessKey, sessionToken, securityToken, tokenExpiraion) {
     const fs = require('fs');
     const credentialsFilePath = (0, exports.getCredentialsFilepath)();
@@ -108,7 +110,6 @@ async function setCredentials(profileName, accessKeyId, secretAccessKey, session
     }
     fs.writeFileSync(credentialsFilePath, fileContent, 'utf8');
 }
-exports.setCredentials = setCredentials;
 function updateCredential(credentialText, profileName, credentialName, newCredentialValue) {
     const lines = credentialText.split('\n');
     var profileFound = false;
@@ -131,5 +132,4 @@ function updateCredential(credentialText, profileName, credentialName, newCreden
     }
     return lines.join('\n');
 }
-exports.updateCredential = updateCredential;
 //# sourceMappingURL=api.js.map
