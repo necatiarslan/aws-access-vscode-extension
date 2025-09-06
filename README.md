@@ -49,7 +49,12 @@ For more detail on aws credentials
 https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 
 ## TODO:
+- The Terminal is not closed if there is a running process. Error message is "zsh: you have running jobs."
+- Share Active Profile with other extensions
 - Set up aws credentials
+- support all credential providers
+- Migrate js sdk v3
+- show current users iam roles (temp codes added)
 - fix when no credentials are found
 
 Thanks, \

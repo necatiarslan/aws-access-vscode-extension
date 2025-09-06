@@ -1,43 +1,48 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateCredential = exports.setCredentials = exports.testAwsConnectivity = exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.getCredentialProvider = void 0;
+exports.updateCredential = exports.setCredentials = exports.testAwsConnectivity = exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.getCredentialProviderName = exports.getCredentials = exports.isSharedIniFileCredentials = void 0;
 const os_1 = require("os");
 const path_1 = require("path");
 const path_2 = require("path");
 const parseKnownFiles_1 = require("./aws-sdk/parseKnownFiles");
-const AWS = require("aws-sdk");
+const credential_providers_1 = require("@aws-sdk/credential-providers");
+const client_cloudwatch_logs_1 = require("@aws-sdk/client-cloudwatch-logs");
+const credential_provider_node_1 = require("@aws-sdk/credential-provider-node");
 const ui = require("./ui");
-function getCredentialProvider(credentials = undefined) {
-    if (!credentials) {
-        credentials = AWS.config.credentials;
-    }
-    if (!credentials) {
-        return "Credential Not Found";
-    }
-    if (credentials instanceof (AWS.EnvironmentCredentials)) {
-        return "EnvironmentCredentials";
-    }
-    else if (credentials instanceof (AWS.ECSCredentials)) {
-        return "ECSCredentials";
-    }
-    else if (credentials instanceof (AWS.SsoCredentials)) {
-        return "SsoCredentials";
-    }
-    else if (credentials instanceof (AWS.SharedIniFileCredentials)) {
-        return "SharedIniFileCredentials";
-    }
-    else if (credentials instanceof (AWS.ProcessCredentials)) {
-        return "ProcessCredentials";
-    }
-    else if (credentials instanceof (AWS.TokenFileWebIdentityCredentials)) {
-        return "TokenFileWebIdentityCredentials";
-    }
-    else if (credentials instanceof (AWS.EC2MetadataCredentials)) {
-        return "EC2MetadataCredentials";
-    }
-    return "UnknownProvider";
+function isSharedIniFileCredentials(credentials = undefined) {
+    // In v3, we check if credentials came from shared ini file differently
+    return credentials?.constructor.name === "SharedIniCredentials";
 }
-exports.getCredentialProvider = getCredentialProvider;
+exports.isSharedIniFileCredentials = isSharedIniFileCredentials;
+async function getCredentials(profileName) {
+    let credentials;
+    try {
+        if (profileName && profileName !== "default") {
+            credentials = await (0, credential_providers_1.fromIni)({ profile: profileName })();
+        }
+        else {
+            credentials = await (0, credential_provider_node_1.defaultProvider)()();
+        }
+        if (!credentials) {
+            throw new Error("Aws credentials not found !!!");
+        }
+        return credentials;
+    }
+    catch (error) {
+        ui.showErrorMessage('Aws Credentials Not Found !!!', error);
+        ui.logToOutput("GetCredentials Error !!!", error);
+        return credentials;
+    }
+}
+exports.getCredentials = getCredentials;
+async function getCredentialProviderName(profileName = undefined) {
+    let credentials = await getCredentials(profileName);
+    if (!credentials) {
+        return "Credentials Not Found";
+    }
+    return credentials.constructor.name;
+}
+exports.getCredentialProviderName = getCredentialProviderName;
 async function getIniProfileData(init = {}) {
     const profiles = await (0, parseKnownFiles_1.parseKnownFiles)(init);
     return profiles;
@@ -64,14 +69,15 @@ const getConfigFilepath = () => process.env[exports.ENV_CREDENTIALS_PATH] || (0,
 exports.getConfigFilepath = getConfigFilepath;
 async function testAwsConnectivity(profile) {
     try {
-        const credentials = new AWS.SharedIniFileCredentials({ profile: profile });
-        // Initialize the CloudWatchLogs client
-        const cloudwatchlogs = new AWS.CloudWatchLogs({ region: "us-east-1", credentials: credentials });
-        // Set the parameters for the describeLogGroups API
-        const params = {
-            limit: 1, //max value
-        };
-        let response = await cloudwatchlogs.describeLogGroups(params).promise();
+        const credentials = await (0, credential_providers_1.fromIni)({ profile })();
+        const client = new client_cloudwatch_logs_1.CloudWatchLogsClient({
+            credentials,
+            region: "us-east-1"
+        });
+        const command = new client_cloudwatch_logs_1.DescribeLogGroupsCommand({
+            limit: 1
+        });
+        await client.send(command);
         return true;
     }
     catch (error) {

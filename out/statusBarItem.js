@@ -278,7 +278,42 @@ class StatusBarItem {
             }
             const terminal = vscode.window.createTerminal("Aws Login");
             terminal.show();
-            terminal.sendText(this.AwsLoginShellCommand + "; echo 'Terminal Will Close In 5 Secs'; sleep 5; exit");
+            const exitCommandBash = `
+            echo "Terminal will close after all jobs finish...";
+            while true; do
+                jobs_count=$(jobs -r | wc -l)
+                if [ "$jobs_count" -eq 0 ]; then
+                    echo "No running jobs. Closing in 5 seconds..."
+                    sleep 5
+                    exit
+                else
+                    echo "There are still $jobs_count running job(s). Waiting 5 seconds..."
+                    sleep 5
+                fi
+            done
+            `;
+            const exitCommandWindows = `
+            Write-Output "Terminal will close after all jobs finish..."
+            while ($true) {
+                $jobsCount = (Get-Job | Where-Object { $_.State -eq 'Running' }).Count
+                if ($jobsCount -eq 0) {
+                    Write-Output "No running jobs. Closing in 5 seconds..."
+                    Start-Sleep -Seconds 5
+                    exit
+                }
+                else {
+                    Write-Output "There are still $jobsCount running job(s). Waiting 5 seconds..."
+                    Start-Sleep -Seconds 5
+                }
+            }
+            `;
+            let exitCommand = exitCommandBash;
+            if (process.platform === "win32") {
+                exitCommand = exitCommandWindows;
+            }
+            let commandToRun = this.AwsLoginShellCommand + "; " + exitCommand;
+            ui.logToOutput('StatusBarItem.AutoCallLoginCommand Executing Command=' + commandToRun);
+            terminal.sendText(commandToRun);
         }
         else {
             ui.showWarningMessage("Set a Aws Login Shell Command To Run");
@@ -332,7 +367,7 @@ class StatusBarItem {
         let tooltipLastline = "";
         tooltipLastline += this.GetBoolChar(this.IsMeWhoRefreshedTheCredentials) + "Renew ";
         tooltipLastline += this.GetBoolChar(this.IsCopyCredentialsToDefaultProfile) + "Copy ";
-        tooltipLastline += api.getCredentialProvider();
+        tooltipLastline += api.getCredentialProviderName(this.ActiveProfile);
         this.ToolTip += "\n" + tooltipLastline;
         this.awsAccessStatusBarItem.tooltip = this.ToolTip;
         this.awsAccessStatusBarItem.text = this.Text;
@@ -388,7 +423,7 @@ class StatusBarItem {
             let tooltipLastline = "";
             tooltipLastline += StatusBarItem.Current.GetBoolChar(StatusBarItem.Current.IsMeWhoRefreshedTheCredentials) + "Renew ";
             tooltipLastline += StatusBarItem.Current.GetBoolChar(StatusBarItem.Current.IsCopyCredentialsToDefaultProfile) + "Copy ";
-            tooltipLastline += api.getCredentialProvider();
+            tooltipLastline += api.getCredentialProviderName(StatusBarItem.Current.ActiveProfile);
             StatusBarItem.Current.ToolTip += "\n" + tooltipLastline;
             StatusBarItem.Current.awsAccessStatusBarItem.tooltip = StatusBarItem.Current.ToolTip;
             StatusBarItem.Current.awsAccessStatusBarItem.text = StatusBarItem.Current.Text;
