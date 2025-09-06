@@ -10,7 +10,7 @@
   },
   "icon": "media/aws-access-logo.png",
   "engines": {
-    "vscode": "^1.71.0"
+    "vscode": "^1.103.0"
   },
   "categories": [
     "Other"
