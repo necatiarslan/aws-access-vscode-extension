@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StatusBarItem = void 0;
+exports.StatusBar = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
 const vscode = require("vscode");
-const api = require("./access/API");
+const api = require("./api");
 const ui = require("./ui");
 const fs_1 = require("fs");
-class StatusBarItem {
+class StatusBar {
     constructor(context) {
-        this.Text = StatusBarItem.LoadingText;
+        this.Text = StatusBar.LoadingText;
         this.ToolTip = "Loading ...";
         this.ActiveProfile = "default";
         this.AwsLoginShellCommandList = {};
@@ -19,22 +19,22 @@ class StatusBarItem {
         this.HasCredentials = false;
         ui.logToOutput('StatusBarItem.constructor Started');
         this.context = context;
-        StatusBarItem.Current = this;
+        StatusBar.Current = this;
         const statusBarClickedCommand = 'aws-access-vscode-extension.statusBarClicked';
-        context.subscriptions.push(vscode.commands.registerCommand(statusBarClickedCommand, StatusBarItem.StatusBarClicked));
+        context.subscriptions.push(vscode.commands.registerCommand(statusBarClickedCommand, StatusBar.StatusBarClicked));
         this.awsAccessStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 2);
         this.awsAccessStatusBarItem.command = statusBarClickedCommand;
-        this.awsAccessStatusBarItem.text = StatusBarItem.LoadingText;
+        this.awsAccessStatusBarItem.text = StatusBar.LoadingText;
         this.awsAccessStatusBarItem.tooltip = this.ToolTip;
         context.subscriptions.push(this.awsAccessStatusBarItem);
         this.awsAccessStatusBarItem.show();
         const refreshButtonClickedCommand = 'aws-access-vscode-extension.refreshButtonClicked';
-        context.subscriptions.push(vscode.commands.registerCommand(refreshButtonClickedCommand, StatusBarItem.RefreshButtonClicked));
+        context.subscriptions.push(vscode.commands.registerCommand(refreshButtonClickedCommand, StatusBar.RefreshButtonClicked));
         this.awsRefreshStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
         this.awsRefreshStatusBarItem.command = refreshButtonClickedCommand;
         context.subscriptions.push(this.awsRefreshStatusBarItem);
         const profileButtonClickedCommand = 'aws-access-vscode-extension.profileButtonClicked';
-        context.subscriptions.push(vscode.commands.registerCommand(profileButtonClickedCommand, StatusBarItem.ProfileButtonClicked));
+        context.subscriptions.push(vscode.commands.registerCommand(profileButtonClickedCommand, StatusBar.ProfileButtonClicked));
         this.awsProfileStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
         this.awsProfileStatusBarItem.command = profileButtonClickedCommand;
         context.subscriptions.push(this.awsProfileStatusBarItem);
@@ -43,7 +43,7 @@ class StatusBarItem {
         this.GetCredentials();
     }
     StartTimer() {
-        this.Timer = setInterval(StatusBarItem.OnTimerTicked, 1 * 1000);
+        this.Timer = setInterval(StatusBar.OnTimerTicked, 1 * 1000);
     }
     StopTimer() {
         clearInterval(this.Timer);
@@ -328,7 +328,7 @@ class StatusBarItem {
         }
         else {
             ui.showWarningMessage("Set a Aws Login Shell Command To Run");
-            StatusBarItem.OpenCommandPalette();
+            StatusBar.OpenCommandPalette();
         }
     }
     PauseAutoLogin() {
@@ -343,7 +343,7 @@ class StatusBarItem {
     }
     ShowLoading() {
         ui.logToOutput('StatusBarItem.ShowLoading Started');
-        this.awsAccessStatusBarItem.text = StatusBarItem.LoadingText;
+        this.awsAccessStatusBarItem.text = StatusBar.LoadingText;
     }
     RefreshText() {
         ui.logToOutput('StatusBarItem.Refresh Started');
@@ -395,71 +395,71 @@ class StatusBarItem {
         }
     }
     static OnTimerTicked() {
-        if (StatusBarItem.Current.HasExpiration) {
-            if (StatusBarItem.Current.ExpirationDateString && StatusBarItem.Current.IsExpired) {
-                let expireDate = new Date(StatusBarItem.Current.ExpirationDateString);
-                StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile + " Expired !!!";
-                StatusBarItem.Current.ToolTip += "\nExpire Time:" + expireDate.toLocaleDateString() + " - " + expireDate.toLocaleTimeString();
-                StatusBarItem.Current.Text = "$(cloud) Expired";
-                StatusBarItem.Current.StopTimer();
-                StatusBarItem.Current.IsAwsLoginCommandExecuted = false;
-                if (StatusBarItem.Current.AwsLoginShellCommand) {
-                    StatusBarItem.Current.awsRefreshStatusBarItem.text = "$(sync)";
-                    StatusBarItem.Current.awsRefreshStatusBarItem.tooltip = "Refresh Aws Token";
-                    StatusBarItem.Current.awsRefreshStatusBarItem.show();
+        if (StatusBar.Current.HasExpiration) {
+            if (StatusBar.Current.ExpirationDateString && StatusBar.Current.IsExpired) {
+                let expireDate = new Date(StatusBar.Current.ExpirationDateString);
+                StatusBar.Current.ToolTip = "Profile:" + StatusBar.Current.ActiveProfile + " Expired !!!";
+                StatusBar.Current.ToolTip += "\nExpire Time:" + expireDate.toLocaleDateString() + " - " + expireDate.toLocaleTimeString();
+                StatusBar.Current.Text = "$(cloud) Expired";
+                StatusBar.Current.StopTimer();
+                StatusBar.Current.IsAwsLoginCommandExecuted = false;
+                if (StatusBar.Current.AwsLoginShellCommand) {
+                    StatusBar.Current.awsRefreshStatusBarItem.text = "$(sync)";
+                    StatusBar.Current.awsRefreshStatusBarItem.tooltip = "Refresh Aws Token";
+                    StatusBar.Current.awsRefreshStatusBarItem.show();
                 }
                 else {
-                    StatusBarItem.Current.awsRefreshStatusBarItem.hide();
+                    StatusBar.Current.awsRefreshStatusBarItem.hide();
                 }
             }
             else {
-                StatusBarItem.Current.ToolTip = "Profile:" + StatusBarItem.Current.ActiveProfile;
-                StatusBarItem.Current.Text = "$(cloud) Expire In " + StatusBarItem.Current.ExpireTime;
-                if (StatusBarItem.Current.IsAutoLoginPaused) {
-                    StatusBarItem.Current.ToolTip += "\nAuto Login Paused";
-                    StatusBarItem.Current.Text += "(P)";
+                StatusBar.Current.ToolTip = "Profile:" + StatusBar.Current.ActiveProfile;
+                StatusBar.Current.Text = "$(cloud) Expire In " + StatusBar.Current.ExpireTime;
+                if (StatusBar.Current.IsAutoLoginPaused) {
+                    StatusBar.Current.ToolTip += "\nAuto Login Paused";
+                    StatusBar.Current.Text += "(P)";
                 }
-                if (StatusBarItem.Current.ExpirationDateString && !StatusBarItem.Current.IsAwsLoginCommandExecuted) {
-                    let expireDate = new Date(StatusBarItem.Current.ExpirationDateString);
+                if (StatusBar.Current.ExpirationDateString && !StatusBar.Current.IsAwsLoginCommandExecuted) {
+                    let expireDate = new Date(StatusBar.Current.ExpirationDateString);
                     let now = new Date();
-                    StatusBarItem.Current.ToolTip += "\nExpire Time:" + expireDate.toLocaleDateString() + " - " + expireDate.toLocaleTimeString();
-                    if (ui.getSeconds(now, expireDate) === 0 && StatusBarItem.Current.AwsLoginShellCommand) {
-                        if (StatusBarItem.Current.IsMeWhoRefreshedTheCredentials === true) {
-                            StatusBarItem.Current.RunLoginCommand();
-                            StatusBarItem.Current.IsAwsLoginCommandExecuted = true;
+                    StatusBar.Current.ToolTip += "\nExpire Time:" + expireDate.toLocaleDateString() + " - " + expireDate.toLocaleTimeString();
+                    if (ui.getSeconds(now, expireDate) === 0 && StatusBar.Current.AwsLoginShellCommand) {
+                        if (StatusBar.Current.IsMeWhoRefreshedTheCredentials === true) {
+                            StatusBar.Current.RunLoginCommand();
+                            StatusBar.Current.IsAwsLoginCommandExecuted = true;
                         }
                         else {
-                            setTimeout(StatusBarItem.Current.GetCredentials, 60000);
+                            setTimeout(StatusBar.Current.GetCredentials, 60000);
                         }
                     }
                 }
             }
             let tooltipLastline = "";
-            tooltipLastline += StatusBarItem.Current.GetBoolChar(StatusBarItem.Current.IsMeWhoRefreshedTheCredentials) + "Renew ";
-            tooltipLastline += StatusBarItem.Current.GetBoolChar(StatusBarItem.Current.IsCopyCredentialsToDefaultProfile) + "Copy to Default Profile ";
-            StatusBarItem.Current.ToolTip += "\n" + tooltipLastline;
-            StatusBarItem.Current.awsAccessStatusBarItem.tooltip = StatusBarItem.Current.ToolTip;
-            StatusBarItem.Current.awsAccessStatusBarItem.text = StatusBarItem.Current.Text;
+            tooltipLastline += StatusBar.Current.GetBoolChar(StatusBar.Current.IsMeWhoRefreshedTheCredentials) + "Renew ";
+            tooltipLastline += StatusBar.Current.GetBoolChar(StatusBar.Current.IsCopyCredentialsToDefaultProfile) + "Copy to Default Profile ";
+            StatusBar.Current.ToolTip += "\n" + tooltipLastline;
+            StatusBar.Current.awsAccessStatusBarItem.tooltip = StatusBar.Current.ToolTip;
+            StatusBar.Current.awsAccessStatusBarItem.text = StatusBar.Current.Text;
         }
     }
     static async StatusBarClicked() {
         ui.logToOutput('StatusBarItem.StatusBarClicked Started');
-        StatusBarItem.OpenCommandPalette();
+        StatusBar.OpenCommandPalette();
     }
     static async RefreshButtonClicked() {
         ui.logToOutput('StatusBarItem.RefreshButtonClicked Started');
-        if (StatusBarItem.Current.HasExpiration && StatusBarItem.Current.IsExpired) {
+        if (StatusBar.Current.HasExpiration && StatusBar.Current.IsExpired) {
             //the credentials may refreshed in another windows, check again
-            await StatusBarItem.Current.GetCredentials();
-            if (StatusBarItem.Current.HasExpiration && StatusBarItem.Current.IsExpired) {
-                StatusBarItem.Current.RunLoginCommand();
+            await StatusBar.Current.GetCredentials();
+            if (StatusBar.Current.HasExpiration && StatusBar.Current.IsExpired) {
+                StatusBar.Current.RunLoginCommand();
             }
         }
     }
     static async ProfileButtonClicked() {
         ui.logToOutput('StatusBarItem.ProfileButtonClicked Started');
-        if (StatusBarItem.Current.Profiles.length > 1) {
-            StatusBarItem.Current.SetActiveProfile();
+        if (StatusBar.Current.Profiles.length > 1) {
+            StatusBar.Current.SetActiveProfile();
         }
     }
     static OpenCommandPalette() {
@@ -503,6 +503,6 @@ class StatusBarItem {
         }
     }
 }
-exports.StatusBarItem = StatusBarItem;
-StatusBarItem.LoadingText = "$(cloud) Aws $(sync~spin)";
-//# sourceMappingURL=StatusBarItem.js.map
+exports.StatusBar = StatusBar;
+StatusBar.LoadingText = "$(cloud) Aws $(sync~spin)";
+//# sourceMappingURL=StatusBar.js.map

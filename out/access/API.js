@@ -12,11 +12,11 @@ exports.UpdateCredential = UpdateCredential;
 const os_1 = require("os");
 const path_1 = require("path");
 const path_2 = require("path");
-const parseKnownFiles_1 = require("./aws-sdk/parseKnownFiles");
+const parseKnownFiles_1 = require("../aws-sdk/parseKnownFiles");
 const client_cloudwatch_logs_1 = require("@aws-sdk/client-cloudwatch-logs");
-const ui = require("./ui");
+const ui = require("./UI");
 const credential_providers_1 = require("@aws-sdk/credential-providers");
-const StatusBarItem = require("./statusBarItem");
+const StatusBarItem = require("./StatusBarItem");
 let CurrentCredentials = undefined;
 async function StartConnection() {
     ui.logToOutput("Starting Connection");

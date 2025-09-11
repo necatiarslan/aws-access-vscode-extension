@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import * as ui from './ui';
-import * as StatusBar from './statusBarItem';
+import * as ui from './access/UI';
+import * as StatusBar from './access/StatusBarItem';
 
 export function activate(context: vscode.ExtensionContext) {
 	ui.logToOutput('Aws Access is now active!');
