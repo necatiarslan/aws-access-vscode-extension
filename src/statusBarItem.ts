@@ -4,7 +4,7 @@ import * as api from './api';
 import * as ui from './ui';
 import { ParsedIniData } from "@aws-sdk/types";
 import { existsSync } from 'fs';
-import { profile } from 'console';
+import { exit } from 'process';
 
 export class StatusBarItem {
 
@@ -28,6 +28,7 @@ export class StatusBarItem {
     public IsAutoLoginPaused:boolean = false;
     public IsMeWhoRefreshedTheCredentials:boolean = false;
     public IsCopyCredentialsToDefaultProfile:boolean = false;
+    public CredentialProviderName:string = "";
 
 
 	constructor(context: vscode.ExtensionContext) {
@@ -237,7 +238,7 @@ export class StatusBarItem {
             {
                 this.StartTimer();
             }
-
+            this.CredentialProviderName = await api.getCredentialProviderName();
             this.SetDefaultCredentials();
 
         }
@@ -400,35 +401,39 @@ export class StatusBarItem {
 
             const terminal = vscode.window.createTerminal("Aws Login");
             terminal.show();
-            const exitCommandBash = `
-            echo "Terminal will close after all jobs finish...";
-            while true; do
-                jobs_count=$(jobs -r | wc -l)
-                if [ "$jobs_count" -eq 0 ]; then
-                    echo "No running jobs. Closing in 5 seconds..."
-                    sleep 5
-                    exit
-                else
-                    echo "There are still $jobs_count running job(s). Waiting 5 seconds..."
-                    sleep 5
-                fi
-            done
-            `;
-            const exitCommandWindows = `
-            Write-Output "Terminal will close after all jobs finish..."
-            while ($true) {
-                $jobsCount = (Get-Job | Where-Object { $_.State -eq 'Running' }).Count
-                if ($jobsCount -eq 0) {
-                    Write-Output "No running jobs. Closing in 5 seconds..."
-                    Start-Sleep -Seconds 5
-                    exit
-                }
-                else {
-                    Write-Output "There are still $jobsCount running job(s). Waiting 5 seconds..."
-                    Start-Sleep -Seconds 5
-                }
-            }
-            `;
+            // const exitCommandBash = `
+            // echo "Terminal will close after all jobs finish...";
+            // while true; do
+            //     jobs_count=$(jobs -r | wc -l)
+            //     if [ "$jobs_count" -eq 0 ]; then
+            //         echo "No running jobs. Closing in 5 seconds..."
+            //         sleep 5
+            //         exit
+            //     else
+            //         echo "There are still $jobs_count running job(s). Waiting 5 seconds..."
+            //         sleep 5
+            //     fi
+            // done
+            // `;
+            // const exitCommandWindows = `
+            // Write-Output "Terminal will close after all jobs finish..."
+            // while ($true) {
+            //     $jobsCount = (Get-Job | Where-Object { $_.State -eq 'Running' }).Count
+            //     if ($jobsCount -eq 0) {
+            //         Write-Output "No running jobs. Closing in 5 seconds..."
+            //         Start-Sleep -Seconds 5
+            //         exit
+            //     }
+            //     else {
+            //         Write-Output "There are still $jobsCount running job(s). Waiting 5 seconds..."
+            //         Start-Sleep -Seconds 5
+            //     }
+            // }
+            // `;
+
+
+            let exitCommandBash = "echo 'Terminal Will Close In 10 Secs'; sleep 10; exit";
+            let exitCommandWindows = "Write-Output 'Terminal Will Close In 10 Secs'; Start-Sleep -Seconds 10; exit";
             let exitCommand = exitCommandBash;
             if(process.platform === "win32")
             {
@@ -506,7 +511,7 @@ export class StatusBarItem {
         let tooltipLastline = "";
         tooltipLastline += this.GetBoolChar(this.IsMeWhoRefreshedTheCredentials) + "Renew ";
         tooltipLastline += this.GetBoolChar(this.IsCopyCredentialsToDefaultProfile) + "Copy ";
-        tooltipLastline += api.getCredentialProviderName(this.ActiveProfile);
+        tooltipLastline += this.CredentialProviderName;
         this.ToolTip += "\n" + tooltipLastline;
 
         this.awsAccessStatusBarItem.tooltip = this.ToolTip;
@@ -586,7 +591,7 @@ export class StatusBarItem {
             let tooltipLastline = "";
             tooltipLastline += StatusBarItem.Current.GetBoolChar(StatusBarItem.Current.IsMeWhoRefreshedTheCredentials) + "Renew ";
             tooltipLastline += StatusBarItem.Current.GetBoolChar(StatusBarItem.Current.IsCopyCredentialsToDefaultProfile) + "Copy ";
-            tooltipLastline += api.getCredentialProviderName(StatusBarItem.Current.ActiveProfile);
+            tooltipLastline += StatusBarItem.Current.CredentialProviderName;
             StatusBarItem.Current.ToolTip += "\n" + tooltipLastline;
 
             StatusBarItem.Current.awsAccessStatusBarItem.tooltip = StatusBarItem.Current.ToolTip;

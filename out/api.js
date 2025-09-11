@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = void 0;
+exports.StartConnection = StartConnection;
+exports.StopConnection = StopConnection;
 exports.isSharedIniFileCredentials = isSharedIniFileCredentials;
 exports.getCredentials = getCredentials;
 exports.getCredentialProviderName = getCredentialProviderName;
@@ -14,21 +16,37 @@ const path_2 = require("path");
 const parseKnownFiles_1 = require("./aws-sdk/parseKnownFiles");
 const credential_providers_1 = require("@aws-sdk/credential-providers");
 const client_cloudwatch_logs_1 = require("@aws-sdk/client-cloudwatch-logs");
-const credential_provider_node_1 = require("@aws-sdk/credential-provider-node");
 const ui = require("./ui");
-function isSharedIniFileCredentials(credentials = undefined) {
-    // In v3, we check if credentials came from shared ini file differently
-    return credentials?.constructor.name === "SharedIniCredentials";
+const credential_providers_2 = require("@aws-sdk/credential-providers");
+const StatusBarItem = require("./statusBarItem");
+let CurrentCredentials = undefined;
+async function StartConnection() {
+    ui.logToOutput("Starting Connection");
+    CurrentCredentials = await getCredentials();
+    //CurrentS3Client = await GetS3Client();
+    ui.logToOutput("Connection Started");
 }
-async function getCredentials(profileName) {
+async function StopConnection() {
+    ui.logToOutput("Stopping Connection");
+    CurrentCredentials = undefined;
+    //CurrentS3Client = undefined;
+    ui.logToOutput("Connection Stopped");
+}
+function isSharedIniFileCredentials(credentials = undefined) {
+    return true;
+}
+async function getCredentials() {
     let credentials;
+    if (CurrentCredentials !== undefined) {
+        ui.logToOutput("Aws credentials From Pool AccessKeyId=" + CurrentCredentials.accessKeyId);
+        return CurrentCredentials;
+    }
     try {
-        if (profileName && profileName !== "default") {
-            credentials = await (0, credential_providers_1.fromIni)({ profile: profileName })();
+        if (StatusBarItem.StatusBarItem.Current) {
+            process.env.AWS_PROFILE = StatusBarItem.StatusBarItem.Current.ActiveProfile;
         }
-        else {
-            credentials = await (0, credential_provider_node_1.defaultProvider)()();
-        }
+        const provider = (0, credential_providers_2.fromNodeProviderChain)({ ignoreCache: true });
+        credentials = await provider();
         if (!credentials) {
             throw new Error("Aws credentials not found !!!");
         }
@@ -40,12 +58,8 @@ async function getCredentials(profileName) {
         return credentials;
     }
 }
-async function getCredentialProviderName(profileName = undefined) {
-    let credentials = await getCredentials(profileName);
-    if (!credentials) {
-        return "Credentials Not Found";
-    }
-    return credentials.constructor.name;
+async function getCredentialProviderName() {
+    return "";
 }
 async function getIniProfileData(init = {}) {
     const profiles = await (0, parseKnownFiles_1.parseKnownFiles)(init);
