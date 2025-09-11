@@ -432,8 +432,8 @@ export class StatusBarItem {
             // `;
 
 
-            let exitCommandBash = "echo 'Terminal Will Close In 10 Secs'; sleep 10; exit";
-            let exitCommandWindows = "Write-Output 'Terminal Will Close In 10 Secs'; Start-Sleep -Seconds 10; exit";
+            let exitCommandBash = "echo 'Terminal Will Close In 10 Secs'; sleep 10; exit 0";
+            let exitCommandWindows = "Write-Output 'Terminal Will Close In 10 Secs'; Start-Sleep -Seconds 10; exit 0";
             let exitCommand = exitCommandBash;
             if(process.platform === "win32")
             {
