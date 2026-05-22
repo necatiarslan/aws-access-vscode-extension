@@ -4,6 +4,7 @@ import * as api from './API';
 import * as ui from './UI';
 import { ParsedIniData } from "@aws-sdk/types";
 import { existsSync } from 'fs';
+import { ProfileWebview } from './ProfileWebview';
 
 export class StatusBarItem {
 
@@ -606,7 +607,7 @@ export class StatusBarItem {
     public static async StatusBarClicked()
     {
         ui.logToOutput('StatusBarItem.StatusBarClicked Started');
-        StatusBarItem.OpenCommandPalette();
+        vscode.commands.executeCommand(ProfileWebview.OpenCommand);
     }
 
     public static async RefreshButtonClicked()

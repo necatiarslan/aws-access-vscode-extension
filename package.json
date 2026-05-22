@@ -68,6 +68,10 @@
       {
         "command": "aws-access-vscode-extension.CopyCredentialsToDefaultProfile",
         "title": "Aws Access:Copy Credentials To Default Profile"
+      },
+      {
+        "command": "aws-access-vscode-extension.OpenProfilesWebview",
+        "title": "Aws Access:Open Profiles Webview"
       }
     ]
   },

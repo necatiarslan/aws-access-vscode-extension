@@ -1,12 +1,18 @@
 import * as vscode from 'vscode';
 import * as ui from './access/UI';
 import * as StatusBar from './access/StatusBarItem';
+import { ProfileWebview } from './access/ProfileWebview';
 
 export function activate(context: vscode.ExtensionContext) {
 	ui.logToOutput('Aws Access is now active!');
 
-	
+	const profileWebview = ProfileWebview.Create(context);
+
 	new StatusBar.StatusBarItem(context);
+
+	vscode.commands.registerCommand(ProfileWebview.OpenCommand, () => {
+		profileWebview.Open();
+	});
 	
 	vscode.commands.registerCommand('aws-access-vscode-extension.RefreshCredentials', () => {
 		StatusBar.StatusBarItem.Current.GetCredentials();
