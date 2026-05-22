@@ -52,7 +52,6 @@ https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 - Share Active Profile with other extensions
 - Set up aws credentials
 - fix when no credentials are found
-- remove client-cloudwatch-logs
 
 Thanks, \
 Necati ARSLAN \

@@ -92,12 +92,14 @@
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^10.4.0",
     "glob": "^13.0.6",
-    "mocha": "^11.3.0",
+    "mocha": "^11.7.6",
     "typescript": "^6.0.3"
   },
   "dependencies": {
     "@aws-sdk/client-sts": "^3.1052.0",
     "@aws-sdk/credential-providers": "^3.1052.0",
-    "@aws-sdk/types": "^3.973.9"
+    "@aws-sdk/types": "^3.973.9",
+    "@vscode-elements/elements": "^2.5.1",
+    "@vscode/codicons": "^0.0.45"
   }
 }
