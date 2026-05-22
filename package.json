@@ -84,18 +84,18 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.3.1",
     "@types/vscode": "^1.103.0",
-    "@typescript-eslint/eslint-plugin": "^8.42.0",
-    "@typescript-eslint/parser": "^8.42.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.4",
+    "@typescript-eslint/parser": "^8.59.4",
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.35.0",
     "glob": "^11.0.3",
-    "mocha": "^11.7.2",
+    "mocha": "^11.7.6",
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudwatch-logs": "^3.883.0",
-    "@aws-sdk/credential-provider-node": "^3.883.0",
-    "@aws-sdk/credential-providers": "^3.883.0",
-    "@aws-sdk/types": "^3.862.0"
+    "@aws-sdk/client-cloudwatch-logs": "^3.1052.0",
+    "@aws-sdk/credential-provider-node": "^3.972.44",
+    "@aws-sdk/credential-providers": "^3.1052.0",
+    "@aws-sdk/types": "^3.973.9"
   }
 }
