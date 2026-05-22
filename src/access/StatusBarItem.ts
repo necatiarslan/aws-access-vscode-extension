@@ -134,11 +134,7 @@ export class StatusBarItem {
     {
         if(this.HasIniCredentials)
         {
-            let canConnect = await api.TestAwsConnectivity();
-            if (canConnect)
-            {
-                ui.showInfoMessage("Successfully Connect to AWS with User " + this.ActiveProfile);
-            }
+            api.TestAwsConnection();
         }
         else
         {

@@ -3,10 +3,10 @@ import { sep } from "path";
 import { join } from "path";
 import { parseKnownFiles, SourceProfileInit } from "../aws-sdk/parseKnownFiles";
 import { ParsedIniData, AwsCredentialIdentity } from "@aws-sdk/types";
-import { CloudWatchLogsClient, DescribeLogGroupsCommand } from "@aws-sdk/client-cloudwatch-logs";
 import * as ui from './UI';
 import { fromNodeProviderChain, fromIni } from "@aws-sdk/credential-providers";
 import * as StatusBarItem from './StatusBarItem';
+import { STSClient, GetCallerIdentityCommand } from "@aws-sdk/client-sts";
 
 let CurrentCredentials: AwsCredentialIdentity | undefined = undefined;
 
@@ -87,26 +87,29 @@ export const GetCredentialsFilepath = () =>
 export const GetConfigFilepath = () =>
   process.env[ENV_CREDENTIALS_PATH] || join(GetHomeDir(), ".aws", "config");
 
-export async function TestAwsConnectivity(): Promise<boolean> {
-  try {
+export async function GetSTSClient(region: string) {
     const credentials = await GetCredentials();
+    const stsClient = new STSClient({region, credentials});
+    return stsClient;
+}
 
-    const client = new CloudWatchLogsClient({
-      credentials,
-      region: "us-east-1"
-    });
+export async function TestAwsConnection() {
+    if (!await GetCredentials()) {
+        ui.showErrorMessage('No AWS credentials available', new Error('No AWS credentials available'));
+        return;
+    }
+    ui.showInfoMessage('You have valid AWS credentials configured.');
 
-    const command = new DescribeLogGroupsCommand({
-      limit: 1
-    });
+    const caller = await GetCallerIdentity();
+    ui.showInfoMessage(`AWS Connection Test Successful. Account: ${caller.Account}, UserId: ${caller.UserId}`);
+    ui.logToOutput(`AWS Connection Test Successful. Account: ${caller.Account}, UserId: ${caller.UserId}, Arn: ${caller.Arn}`);
+}
 
-    await client.send(command);
-    return true;
-  } catch (error: any) {
-    ui.showErrorMessage('api.GetLogGroupList Error !!!', error);
-    ui.logToOutput("api.GetLogGroupList Error !!!", error);
-    return false;
-  }
+export async function GetCallerIdentity() {
+    const sts = await GetSTSClient('us-east-1');
+    const command = new GetCallerIdentityCommand({});
+    const result = await sts.send(command);
+    return result;
 }
 
 export async function SetCredentials(profileName: string, accessKeyId: string | undefined, secretAccessKey: string | undefined, sessionToken: string | undefined, securityToken: string | undefined, tokenExpiraion: string | undefined) {

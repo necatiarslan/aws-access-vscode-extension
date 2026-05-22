@@ -1,37 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetConfigFilepath = exports.GetCredentialsFilepath = exports.GetHomeDir = exports.ENV_CREDENTIALS_PATH = void 0;
 exports.StartConnection = StartConnection;
@@ -39,17 +6,19 @@ exports.StopConnection = StopConnection;
 exports.GetIniCredentials = GetIniCredentials;
 exports.GetCredentials = GetCredentials;
 exports.GetIniProfileData = GetIniProfileData;
-exports.TestAwsConnectivity = TestAwsConnectivity;
+exports.GetSTSClient = GetSTSClient;
+exports.TestAwsConnection = TestAwsConnection;
+exports.GetCallerIdentity = GetCallerIdentity;
 exports.SetCredentials = SetCredentials;
 exports.UpdateCredential = UpdateCredential;
 const os_1 = require("os");
 const path_1 = require("path");
 const path_2 = require("path");
 const parseKnownFiles_1 = require("../aws-sdk/parseKnownFiles");
-const client_cloudwatch_logs_1 = require("@aws-sdk/client-cloudwatch-logs");
-const ui = __importStar(require("./UI"));
+const ui = require("./UI");
 const credential_providers_1 = require("@aws-sdk/credential-providers");
-const StatusBarItem = __importStar(require("./StatusBarItem"));
+const StatusBarItem = require("./StatusBarItem");
+const client_sts_1 = require("@aws-sdk/client-sts");
 let CurrentCredentials = undefined;
 async function StartConnection() {
     ui.logToOutput("Starting Connection");
@@ -119,24 +88,26 @@ const GetCredentialsFilepath = () => process.env[exports.ENV_CREDENTIALS_PATH] |
 exports.GetCredentialsFilepath = GetCredentialsFilepath;
 const GetConfigFilepath = () => process.env[exports.ENV_CREDENTIALS_PATH] || (0, path_2.join)((0, exports.GetHomeDir)(), ".aws", "config");
 exports.GetConfigFilepath = GetConfigFilepath;
-async function TestAwsConnectivity() {
-    try {
-        const credentials = await GetCredentials();
-        const client = new client_cloudwatch_logs_1.CloudWatchLogsClient({
-            credentials,
-            region: "us-east-1"
-        });
-        const command = new client_cloudwatch_logs_1.DescribeLogGroupsCommand({
-            limit: 1
-        });
-        await client.send(command);
-        return true;
+async function GetSTSClient(region) {
+    const credentials = await GetCredentials();
+    const stsClient = new client_sts_1.STSClient({ region, credentials });
+    return stsClient;
+}
+async function TestAwsConnection() {
+    if (!await GetCredentials()) {
+        ui.showErrorMessage('No AWS credentials available', new Error('No AWS credentials available'));
+        return;
     }
-    catch (error) {
-        ui.showErrorMessage('api.GetLogGroupList Error !!!', error);
-        ui.logToOutput("api.GetLogGroupList Error !!!", error);
-        return false;
-    }
+    ui.showInfoMessage('You have valid AWS credentials configured.');
+    const caller = await GetCallerIdentity();
+    ui.showInfoMessage(`AWS Connection Test Successful. Account: ${caller.Account}, UserId: ${caller.UserId}`);
+    ui.logToOutput(`AWS Connection Test Successful. Account: ${caller.Account}, UserId: ${caller.UserId}, Arn: ${caller.Arn}`);
+}
+async function GetCallerIdentity() {
+    const sts = await GetSTSClient('us-east-1');
+    const command = new client_sts_1.GetCallerIdentityCommand({});
+    const result = await sts.send(command);
+    return result;
 }
 async function SetCredentials(profileName, accessKeyId, secretAccessKey, sessionToken, securityToken, tokenExpiraion) {
     const fs = require('fs');
