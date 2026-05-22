@@ -79,6 +79,11 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
+  "depcheck": {
+    "ignores": [
+      "vscode"
+    ]
+  },
   "devDependencies": {
     "@types/node": "^25.9.1",
     "@types/vscode": "^1.103.0",
