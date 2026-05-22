@@ -19,7 +19,7 @@ export async function StartConnection() {
 
 export async function StopConnection() {
   ui.logToOutput("Stopping Connection");
-  CurrentCredentials = undefined
+  CurrentCredentials = undefined;
   //CurrentS3Client = undefined;
   ui.logToOutput("Connection Stopped");
 }
