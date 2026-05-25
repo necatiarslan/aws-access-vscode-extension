@@ -295,6 +295,16 @@ class ProfileWebview {
             word-break: break-all;
         }
 
+        .meta a {
+            color: var(--vscode-textLink-foreground);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .meta a:hover {
+            color: var(--vscode-textLink-activeForeground);
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -338,8 +348,8 @@ class ProfileWebview {
             </div>
             <div id="statusText" class="status"></div>
             <div class="meta">
-                <div>Credentials: <span id="credentialsPath"></span></div>
-                <div>Config: <span id="configPath"></span></div>
+                <div>Credentials: <a id="credentialsPath" href="#"></a></div>
+                <div>Config: <a id="configPath" href="#"></a></div>
             </div>
         </section>
 
@@ -347,23 +357,19 @@ class ProfileWebview {
             <h3>Actions</h3>
             <div class="button-row">
                 <vscode-button id="refreshBtn">Refresh Credentials</vscode-button>
-                <vscode-button id="openCredentialsBtn">Open Credentials File</vscode-button>
-                <vscode-button id="openConfigBtn">Open Config File</vscode-button>
                 <vscode-button id="testConnectionBtn">Test Connection</vscode-button>
-                <vscode-button id="runLoginBtn">Run Login Command</vscode-button>
             </div>
         </section>
 
         <section class="card">
             <h3>Auto Login</h3>
-            <vscode-checkbox id="autoLoginCheckbox">Auto Login Enabled</vscode-checkbox>
-        </section>
-
-        <section class="card">
-            <h3>Login Command</h3>
             <div class="field-row">
                 <vscode-textfield id="loginCommandInput" placeholder="aws sso login --profile my-profile"></vscode-textfield>
+                <vscode-checkbox id="autoLoginCheckbox">Enabled</vscode-checkbox>
                 <vscode-button id="saveLoginBtn">Save</vscode-button>
+            </div>
+            <div class="button-row" style="margin-top: 10px;">
+                <vscode-button id="runLoginBtn">Run</vscode-button>
             </div>
         </section>
 
@@ -386,8 +392,6 @@ class ProfileWebview {
         const credentialsPath = document.getElementById('credentialsPath');
         const configPath = document.getElementById('configPath');
         const refreshBtn = document.getElementById('refreshBtn');
-        const openCredentialsBtn = document.getElementById('openCredentialsBtn');
-        const openConfigBtn = document.getElementById('openConfigBtn');
         const testConnectionBtn = document.getElementById('testConnectionBtn');
         const runLoginBtn = document.getElementById('runLoginBtn');
         const autoLoginCheckbox = document.getElementById('autoLoginCheckbox');
@@ -481,7 +485,9 @@ class ProfileWebview {
             autoLoginCheckbox.checked = state.autoLoginEnabled;
             loginCommandInput.value = state.loginCommand || '';
             credentialsPath.textContent = state.credentialsFilePath;
+            credentialsPath.title = state.credentialsFilePath;
             configPath.textContent = state.configFilePath;
+            configPath.title = state.configFilePath;
         }
 
         profileSelect.addEventListener('change', () => {
@@ -494,11 +500,13 @@ class ProfileWebview {
             setActionsDisabled(false);
         });
 
-        openCredentialsBtn.addEventListener('click', () => {
+        credentialsPath.addEventListener('click', (event) => {
+            event.preventDefault();
             post('openCredentialsFile');
         });
 
-        openConfigBtn.addEventListener('click', () => {
+        configPath.addEventListener('click', (event) => {
+            event.preventDefault();
             post('openConfigFile');
         });
 
